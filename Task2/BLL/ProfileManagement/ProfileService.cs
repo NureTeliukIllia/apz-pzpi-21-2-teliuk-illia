@@ -8,7 +8,6 @@ using Infrustructure.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using BLL.ProfileManagement.Interface;
 
 namespace BLL.ProfileManagement
 {

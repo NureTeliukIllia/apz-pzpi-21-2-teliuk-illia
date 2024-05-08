@@ -1,4 +1,4 @@
-﻿using BLL.ProfileManagement.Interface;
+﻿using BLL.ProfileManagement;
 using Core;
 using Infrustructure.Dto.UserProfile;
 using Microsoft.AspNetCore.Authorization;

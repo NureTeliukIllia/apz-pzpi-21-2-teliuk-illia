@@ -3,7 +3,7 @@ using Infrustructure.Dto.UserProfile;
 using Infrustructure.ErrorHandling.Errors.Base;
 
 
-namespace BLL.ProfileManagement.Interface
+namespace BLL.ProfileManagement
 {
     public interface IProfileService
     {
