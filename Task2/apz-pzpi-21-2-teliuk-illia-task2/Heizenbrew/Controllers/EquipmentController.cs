@@ -145,17 +145,16 @@ namespace heisenbrew_api.Controllers
         /// <summary>
         /// Update equipment's connection string.
         /// </summary>
-        /// <param name="id">The id of the equipment to update its connection string.</param>
-        /// <param name="connectionString">The new connection string.</param>
+        /// <param name="equipmentSettingsDto">The dto with info about equipment settings.</param>
         /// <remarks>
         /// If the operation is successful, it will return a corresponding message.
         /// </remarks>
         /// <returns>An IActionResult representing the result of the operation.</returns>
         [Authorize]
-        [HttpGet("my-equipment/update-string/{id}/{connectionString}")]
-        public async Task<IActionResult> UpdateConnectionString(Guid id, string connectionString)
+        [HttpPut("my-equipment/update-string")]
+        public async Task<IActionResult> UpdateConnectionString([FromBody] EquipmentSettingsDto equipmentSettingsDto)
         {
-            var result = await _equipmentService.UpdateConnectionStringAsync(id, connectionString);
+            var result = await _equipmentService.UpdateConnectionStringAsync(equipmentSettingsDto);
             return this.CreateResponse(result);
         }
 

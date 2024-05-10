@@ -11,6 +11,7 @@ using Infrustructure.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,7 +81,7 @@ namespace BLL.EquipmentManagement
             {
                 var equipment = await _context.BrewingEquipment.FirstOrDefaultAsync(bE => bE.Id == brewingEquipmentId);
 
-                if(equipment is null)
+                if (equipment is null)
                 {
                     return BrewingEquipmentServiceErrors.GetEquipmentByIdError;
                 }
@@ -146,12 +147,12 @@ namespace BLL.EquipmentManagement
 
                 var equipment = await _context.BrewerBrewingEquipment.Where(bE => bE.Id == brewerBrewingEquipmentId).Include(bBE => bBE.BrewingEquipment).FirstOrDefaultAsync();
 
-                if(equipment is null)
+                if (equipment is null)
                 {
                     return BrewingEquipmentServiceErrors.GetEquipmentByIdError;
                 }
 
-                if(equipment.BrewerId != userId)
+                if (equipment.BrewerId != userId)
                 {
                     return BrewingEquipmentServiceErrors.NotYourEquipmentError;
                 }
@@ -191,21 +192,6 @@ namespace BLL.EquipmentManagement
             try
             {
                 //Here will be some logic for connecting to the IoT device
-                var response = new EquipmentStatusDto(25.5, 1013.25, 50.2, 75.0, "2024-05-01T12:00:00", false);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BLL.GetEquipmentStatusAsync ERROR: {ex.Message}");
-                return BrewingEquipmentServiceErrors.GetEquipmentStatusError;
-            }
-        }
-
-        public async Task<Result<BrewerBrewingEquipmentFullInfoDto, Error>> UpdateConnectionStringAsync(Guid updateBrewingEquipmentId, string connectionString)
-        {
-
-            try  
-            {
                 var isUserValid = _contextAccessor.TryGetUserId(out Guid userId);
 
                 if (!isUserValid)
@@ -213,7 +199,7 @@ namespace BLL.EquipmentManagement
                     return UserErrors.InvalidUserId;
                 }
 
-                var equipment = await _context.BrewerBrewingEquipment.Where(bE => bE.Id == updateBrewingEquipmentId).Include(bBE => bBE.BrewingEquipment).FirstOrDefaultAsync();
+                var equipment = await _context.BrewerBrewingEquipment.Where(bE => bE.Id == equipmentId).Include(bBE => bBE.BrewingEquipment).FirstOrDefaultAsync();
 
                 if (equipment is null)
                 {
@@ -225,18 +211,56 @@ namespace BLL.EquipmentManagement
                     return BrewingEquipmentServiceErrors.NotYourEquipmentError;
                 }
 
-                equipment.ConnectionString = connectionString;
+
+                var connectionString = equipment.ConnectionString;
+                var status = await FetchStatusFromIoTDeviceAsync(connectionString);
+
+                var response = new EquipmentStatusDto(status.Temperature, status.Pressure, status.Humidity, status.Fullness, status.LastUpdate, status.IsBrewing);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BLL.GetEquipmentStatusAsync ERROR: {ex.Message}");
+                return BrewingEquipmentServiceErrors.GetEquipmentStatusError;
+            }
+        }
+
+        public async Task<Result<BrewerBrewingEquipmentFullInfoDto, Error>> UpdateConnectionStringAsync(EquipmentSettingsDto equipmentSettingsDto)
+        {
+
+            try
+            {
+                var isUserValid = _contextAccessor.TryGetUserId(out Guid userId);
+
+                if (!isUserValid)
+                {
+                    return UserErrors.InvalidUserId;
+                }
+
+                var equipment = await _context.BrewerBrewingEquipment.Where(bE => bE.Id == equipmentSettingsDto.EquipmentId).Include(bBE => bBE.BrewingEquipment).FirstOrDefaultAsync();
+
+                if (equipment is null)
+                {
+                    return BrewingEquipmentServiceErrors.GetEquipmentByIdError;
+                }
+
+                if (equipment.BrewerId != userId)
+                {
+                    return BrewingEquipmentServiceErrors.NotYourEquipmentError;
+                }
+
+                equipment.ConnectionString = equipmentSettingsDto.ConnectionString;
                 _context.BrewerBrewingEquipment.Update(equipment);
                 await _context.SaveChangesAsync();
                 return _mapper.Map<BrewerBrewingEquipmentFullInfoDto>(equipment);
 
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"BLL.UpdateConnectionStringAsync ERROR: {ex.Message}");
-                    return BrewingEquipmentServiceErrors.ChangeConnectionStringError;
-                }
-            
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BLL.UpdateConnectionStringAsync ERROR: {ex.Message}");
+                return BrewingEquipmentServiceErrors.ChangeConnectionStringError;
+            }
+
         }
 
         public async Task<Result<BrewingEquipmentFullInfoDto, Error>> UpdateEquipmentAsync(UpdateBrewingEquipmentDto updateBrewingEquipmentDto)
@@ -268,12 +292,30 @@ namespace BLL.EquipmentManagement
         {
             var equipment = await _context.BrewingEquipment.FirstOrDefaultAsync(bQ => bQ.Id == equipmentId);
 
-            if(equipment is null)
+            if (equipment is null)
             {
                 throw new Exception("The equipment with such id doesn't exist.");
             }
 
             return equipment;
+        }
+
+        private async Task<EquipmentStatusDto> FetchStatusFromIoTDeviceAsync(string connectionString)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync($"{connectionString}status");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var status = JsonConvert.DeserializeObject<EquipmentStatusDto>(content);
+                    return status;
+                }
+                else
+                {
+                    throw new Exception($"Failed to fetch status from IoT device. Status code: {response.StatusCode}");
+                }
+            }
         }
     }
 }
