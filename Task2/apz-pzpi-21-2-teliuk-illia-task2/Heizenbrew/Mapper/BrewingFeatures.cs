@@ -13,6 +13,7 @@ namespace heisenbrew_api.Mapper
                 .ForCtorParam(nameof(BrewingFullInfoDto.RecipeTitle), otp => otp.MapFrom(src => src.Recipe.Title))
                 .ForCtorParam(nameof(BrewingFullInfoDto.LastUpdateDate), otp => otp.MapFrom(src => src.BrewingLogs.Select(b => b.LogTime).LastOrDefault()));*/
             CreateMap<BrewingLog, BrewingLogDto>();
+            CreateMap<BrewingLogDto, BrewingLog>();
         }
     }
 }

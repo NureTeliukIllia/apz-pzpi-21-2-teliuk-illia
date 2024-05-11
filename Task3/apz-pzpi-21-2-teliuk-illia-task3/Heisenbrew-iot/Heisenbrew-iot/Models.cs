@@ -2,6 +2,7 @@
 {
     public class Brewing
     {
+        public Guid Id { get; set; }
         public Guid RecipeId { get; set; }
         public ICollection<BrewingLog> BrewingLogs { get; set; }
         public Status Status { get; set; }
@@ -15,10 +16,35 @@
         public DateTime LogTime { get; set; }
     }
 
+    public class Recipe
+    {
+        public Guid Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public ICollection<RecipeIngredient> Ingredients { get; set; }
+    }
+
+    public class RecipeIngredient
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public double Weight { get; set; }
+    }
+
     public enum BrewingLogCode
     {
         Info,
         Warning,
         CriticalError
+    }
+
+    public enum Status
+    {
+        Started,
+        Filling,
+        Processing,
+        Finished,
+        Failed,
+        Aborted
     }
 }

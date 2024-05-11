@@ -8,6 +8,7 @@ namespace Infrustructure.Dto.Brewing
 {
     public record BrewingFullInfoDto
     (
+        Guid Id,
         string EquipmentTitle,
         string RecipeTitle,
         string BrewingStatus,

@@ -15,9 +15,10 @@ static int GetAvailablePort()
     listener.Stop();
     return port;
 }
-
+List<Brewing> specialGlobalArray = new List<Brewing>();
 var isBrewing = false; // Global variable to track brewing status
 Brewing currentBrewing = null; // Global variable to store current brewing process
+var lastUpdate = DateTime.Now;
 
 var listener = new HttpListener();
 var port = GetAvailablePort();
@@ -36,35 +37,68 @@ while (true)
     switch (request.Url.LocalPath)
     {
         case "/status":
+            Console.WriteLine("Status endpoint called.");
             var statusDto = new EquipmentStatusDto
             {
                 Temperature = 25.5,
                 Pressure = 1013.25,
                 Humidity = 50,
                 Fullness = 0.75,
-                LastUpdate = DateTime.Now.ToString(),
+                LastUpdate = lastUpdate.ToString(),
                 IsBrewing = isBrewing
             };
             responseString = JsonSerializer.Serialize(statusDto);
             break;
 
         case "/startbrewing":
+            Console.WriteLine("Start Brewing endpoint called.");
             if (!isBrewing)
             {
                 using (var reader = new StreamReader(request.InputStream))
                 {
                     var requestBody = await reader.ReadToEndAsync();
-                    var recipe = JsonSerializer.Deserialize<RecipeDto>(requestBody);
-                    // Start brewing the recipe...
+                    var recipe = JsonSerializer.Deserialize<Recipe>(requestBody); // Deserialize into Recipe object
+                    Console.WriteLine($"Starting brewing for recipe: {recipe.Title}"); // Log the recipe being brewed
                     isBrewing = true; // Set brewing status to true
+                    lastUpdate = DateTime.Now;
                     currentBrewing = new Brewing
                     {
+                        Id = Guid.NewGuid(),
                         RecipeId = recipe.Id,
                         BrewingLogs = new List<BrewingLog>(),
-                        Status = Status.Processing,
-                        CreatedAt = DateTime.Now
+                        Status = Status.Started,
+                        CreatedAt = lastUpdate
                     };
-                    responseString = $"Started brewing: {recipe.Title}";
+                    currentBrewing = new Brewing
+                    {
+                        Id = Guid.NewGuid(),
+                        RecipeId = recipe.Id,
+                        BrewingLogs = new List<BrewingLog>(),
+                        Status = Status.Started,
+                        CreatedAt = lastUpdate
+                    };
+                    var brewingDto = new BrewingFullInfoDto
+                    (
+                        currentBrewing.Id,
+                        Enum.GetName(typeof(Status), currentBrewing.Status),
+                        currentBrewing.BrewingLogs.Select(b => b.LogTime).LastOrDefault().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss"),
+                        currentBrewing.BrewingLogs.Select(bL => new BrewingLogDto(bL.Message, bL.LogTime)).ToList()
+
+                    );
+                    responseString = JsonSerializer.Serialize(brewingDto);
+
+                    foreach (var ingredient in recipe.Ingredients)
+                    {
+                        var addingMessage = $"Adding {ingredient.Name}";
+                        Console.WriteLine(addingMessage); // Log the adding message to the console
+                        currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = addingMessage });
+                        await Task.Delay(3000); // Wait for 3 seconds
+                    }
+
+                    var brewingMessage = "Brewing the beer";
+                    Console.WriteLine(brewingMessage);
+                    currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = brewingMessage });
+
                 }
             }
             else
@@ -73,13 +107,15 @@ while (true)
             }
             break;
 
+
+
         case "/brewingstatus":
+            Console.WriteLine("Brewing Status endpoint called.");
             if (isBrewing && currentBrewing != null)
             {
                 var brewingStatusDto = new BrewingFullInfoDto
                 (
-                    "Brewing Equipment",
-                    "Sample Recipe",
+                    currentBrewing.Id,
                     currentBrewing.Status.ToString(),
                     currentBrewing.CreatedAt.ToString(),
                     currentBrewing.BrewingLogs.Select(bL => new BrewingLogDto(bL.Message, bL.LogTime)).ToList()
@@ -93,6 +129,7 @@ while (true)
             break;
 
         case "/abort":
+            Console.WriteLine("Abort endpoint called.");
             if (isBrewing && currentBrewing != null)
             {
                 // Abort the brewing process...
@@ -111,6 +148,7 @@ while (true)
             responseString = "Endpoint not found.";
             break;
     }
+
 
     byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
     response.ContentLength64 = buffer.Length;

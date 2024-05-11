@@ -23,21 +23,11 @@
         decimal CookingPrice = 0M
     );
 
-    public enum Status
-    {
-        Started,
-        Filling,
-        Processing,
-        Finished,
-        Failed,
-        Aborted
-    }
 
     public record BrewingLogDto(string Message, DateTime Time);
 
     public record BrewingFullInfoDto(
-        string EquipmentTitle,
-        string RecipeTitle,
+        Guid Id,
         string BrewingStatus,
         string LastUpdateDate,
         IList<BrewingLogDto> BrewingLogs

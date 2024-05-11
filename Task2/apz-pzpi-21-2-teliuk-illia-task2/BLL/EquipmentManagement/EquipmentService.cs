@@ -317,5 +317,6 @@ namespace BLL.EquipmentManagement
                 }
             }
         }
+
     }
 }

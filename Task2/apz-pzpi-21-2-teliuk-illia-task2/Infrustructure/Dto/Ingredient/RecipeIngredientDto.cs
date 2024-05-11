@@ -8,7 +8,7 @@ namespace Infrustructure.Dto.Ingredient
 {
     public record RecipeIngredientDto
     (
-
+      Guid Id,
       string Name,
       double Weight
     );
