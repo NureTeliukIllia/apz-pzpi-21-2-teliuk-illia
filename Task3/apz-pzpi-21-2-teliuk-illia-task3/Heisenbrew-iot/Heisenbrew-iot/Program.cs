@@ -40,7 +40,7 @@ class Program
         while (true)
         {
             var context = await listener.GetContextAsync();
-            _ = Task.Run(() => ProcessRequest(context)); // Process each request in a separate task
+            _ = Task.Run(() => ProcessRequest(context));
         }
     }
 
@@ -52,47 +52,57 @@ class Program
             {
                 currentBrewing.Status = Status.Started;
                 lastUpdate = DateTime.Now;
-                var startingMessage = $"Starting brewing the \"{currentBrewing.Recipe.Title}\"...";
+                var startingMessage = $"Starting brewing the {currentBrewing.Recipe.Title}...";
                 currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = startingMessage, LogTime = lastUpdate });
                 Console.WriteLine($"Starting brewing for recipe: {currentBrewing.Recipe.Title}");
                 await Task.Delay(2000);
 
-                if (isBrewing)
+                if (isAborted)
                 {
-                    currentBrewing.Status = Status.Filling;
-                    foreach (var ingredient in currentBrewing.Recipe.Ingredients)
+                    isAborted = false;
+                    continue;
+                }
+                currentBrewing.Status = Status.Filling;
+                foreach (var ingredient in currentBrewing.Recipe.Ingredients)
+                {
+                    if (isAborted)
                     {
-                        if (isBrewing)
-                        {
-                            var addingMessage = $"Adding {ingredient.Name}...";
-                            lastUpdate = DateTime.Now;
-                            currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = addingMessage, LogTime = lastUpdate });
-                            Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {addingMessage}");
-                            await Task.Delay(3000);
-                        }
+                        break;
                     }
-                }
-                if (isBrewing)
-                {
-                    currentBrewing.Status = Status.Processing;
-                    lastUpdate = DateTime.Now;
-                    var brewingMessage = "Brewing the beer...";
-                    currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = brewingMessage, LogTime = lastUpdate });
-                    Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {brewingMessage}");
-                    await Task.Delay(15000);
-                }
-                if (isBrewing)
-                {
-                    currentBrewing.Status = Status.Finished;
-                    lastUpdate = DateTime.Now;
-                    var completedMessage = "The brewing process is completed.";
-                    currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = completedMessage, LogTime = lastUpdate });
 
-                    Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {completedMessage}");
-                    brewingsHistory.Add(currentBrewing);
-                    currentBrewing = null;
-                    isBrewing = false;
+                    var addingMessage = $"Adding {ingredient.Name}...";
+                    lastUpdate = DateTime.Now;
+                    currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = addingMessage, LogTime = lastUpdate });
+                    Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {addingMessage}");
+                    await Task.Delay(3000);
+
                 }
+                if (isAborted)
+                {
+                    isAborted = false;
+                    continue;
+                }
+                currentBrewing.Status = Status.Processing;
+                lastUpdate = DateTime.Now;
+                var brewingMessage = "Brewing the beer...";
+                currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = brewingMessage, LogTime = lastUpdate });
+                Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {brewingMessage}");
+                await Task.Delay(15000);
+                if (isAborted)
+                {
+                    isAborted = false;
+                    continue;
+                }
+                currentBrewing.Status = Status.Finished;
+                lastUpdate = DateTime.Now;
+                var completedMessage = "The brewing process is completed.";
+                currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = completedMessage, LogTime = lastUpdate });
+
+                Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {completedMessage}");
+                brewingsHistory.Add(currentBrewing);
+                currentBrewing = null;
+                isBrewing = false;
+
 
 
 
@@ -112,12 +122,13 @@ class Program
         {
             case "/status":
                 lastUpdate = DateTime.Now;
+                var random = new Random();
                 var statusDto = new EquipmentStatusDto
                 {
-                    Temperature = 25.5,
-                    Pressure = 1013.25,
-                    Humidity = 50,
-                    Fullness = 0.75,
+                    Temperature = random.NextDouble() * (40.0 - (-20.0)) - 20.0,
+                    Pressure = random.NextDouble() * (1100.0 - 900.0) + 900.0,
+                    Humidity = random.NextDouble() * (100.0 - 0.0),
+                    Fullness = random.NextDouble(),
                     LastUpdate = lastUpdate.ToString(),
                     IsBrewing = isBrewing
                 };
@@ -203,6 +214,7 @@ class Program
                     brewingsHistory.Add(currentBrewing);
                     currentBrewing = null;
                     isBrewing = false;
+                    isAborted = true;
                     lastUpdate = DateTime.Now;
                     responseString = "Successfully aborted.";
 
@@ -244,6 +256,7 @@ class Program
     }
 
     static bool isBrewing = false;
+    static bool isAborted = false;
     static Brewing currentBrewing = null;
     static DateTime lastUpdate = DateTime.Now;
     static List<Brewing> brewingsHistory = new List<Brewing>();

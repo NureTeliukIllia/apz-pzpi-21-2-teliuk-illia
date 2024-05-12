@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Heisenbrew-iot")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+63a6aa37dbcffa3964bbff1b350882f742c6e118")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e7911a76fdfb0f9b0e3eb8132884cb1d462d0e9d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Heisenbrew-iot")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Heisenbrew-iot")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
