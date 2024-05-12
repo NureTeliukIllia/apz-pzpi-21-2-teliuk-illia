@@ -24,12 +24,14 @@
     );
 
 
-    public record BrewingLogDto(string Message, DateTime Time);
+    public record BrewingLogDto(string StatusCode, string Message, string LogTime);
 
     public record BrewingFullInfoDto(
         Guid Id,
+        Guid RecipeId,
         string BrewingStatus,
         string LastUpdateDate,
-        IList<BrewingLogDto> BrewingLogs
+        IList<BrewingLogDto> BrewingLogs,
+        string CreatedAt
     );
 }
