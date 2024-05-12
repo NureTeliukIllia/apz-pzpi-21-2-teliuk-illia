@@ -9,10 +9,12 @@ namespace Infrustructure.Dto.Brewing
     public record BrewingFullInfoDto
     (
         Guid Id,
+        Guid RecipeId,
         string EquipmentTitle,
         string RecipeTitle,
         string BrewingStatus,
         string LastUpdateDate,
-        IList<BrewingLogDto> BrewingLogs
+        IList<BrewingLogDto> BrewingLogs,
+        string CreatedAt
     );
 }

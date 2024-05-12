@@ -50,6 +50,8 @@ namespace BLL.BrewingManagement
 
                 var equipment = await _context.BrewerBrewingEquipment.Where(bE => bE.Id == equipmentId).Include(bBE => bBE.BrewingEquipment).Include(bBE => bBE.Brewings).ThenInclude(b => b.BrewingLogs).FirstOrDefaultAsync();
 
+
+
                 if (equipment is null)
                 {
                     return BrewingEquipmentServiceErrors.GetEquipmentByIdError;
@@ -60,26 +62,23 @@ namespace BLL.BrewingManagement
                     return BrewingEquipmentServiceErrors.NotYourEquipmentError;
                 }
 
+                var isReachable = await IsConnectionStringReachableAsync(equipment.ConnectionString);
+                if (!isReachable)
+                {
+                    return BrewingEquipmentServiceErrors.EquipmentIsNotReachableError;
+                }
+
                 if (!equipment.IsBrewing)
                 {
                     return BrewingServiceErrors.NoBrewingsNowError;
                 }
-                ;
 
 
-                var brewing = await _context.Brewings.Where(b => b.BrewerBrewingEquipmentId == equipmentId)
-                    .OrderBy(b => b.CreatedAt).LastOrDefaultAsync();
+                await AbortBrewingAsync(equipment.ConnectionString);
+                await GetBrewingStatusAsync(equipmentId);
 
-                if (brewing is null)
-                {
-                    return BrewingServiceErrors.GetBrewingByIdError;
-                }
 
-                brewing.Status = Status.Aborted;
-                equipment.IsBrewing = false;
-                await _context.SaveChangesAsync();
-
-                return $"Successfully stopped the brewing on {equipment.BrewingEquipment.Name}";
+                return $"Successfully stopped the brewing on {equipment.BrewingEquipment.Name}.";
 
             }
             catch (Exception ex)
@@ -101,7 +100,7 @@ namespace BLL.BrewingManagement
                 }
 
                 var user = await _context.Brewers.Include(u => u.Ingredients).FirstOrDefaultAsync(u => u.Id == userId);
-                var equipment = await _context.BrewerBrewingEquipment.Include(bE => bE.BrewingEquipment).FirstOrDefaultAsync(bE => bE.Id == equipmentId);
+                var equipment = await _context.BrewerBrewingEquipment.Include(bE => bE.BrewingEquipment).Include(bE => bE.Brewings).FirstOrDefaultAsync(bE => bE.Id == equipmentId);
 
                 if (equipment is null)
                 {
@@ -113,27 +112,68 @@ namespace BLL.BrewingManagement
                     return BrewingEquipmentServiceErrors.NotYourEquipmentError;
                 }
 
-
-                if (!equipment.IsBrewing)
+                var isReachable = await IsConnectionStringReachableAsync(equipment.ConnectionString);
+                if (!isReachable)
                 {
-                    return BrewingServiceErrors.NoBrewingsNowError;
+                    return BrewingEquipmentServiceErrors.EquipmentIsNotReachableError;
                 }
 
+                var brewingHistoryCount = await GetBrewingHistoryCountAsync(equipment.ConnectionString);
 
-                var brewing = await _context.Brewings.Where(b => b.BrewerBrewingEquipmentId == equipmentId).OrderByDescending(b => b.CreatedAt).Include(b => b.BrewingLogs).Include(b => b.Recipe).Include(b => b.BrewerBrewingEquipment).ThenInclude(bE => bE.BrewingEquipment).FirstOrDefaultAsync();
+                if (brewingHistoryCount == 0)
+                {
+                    return BrewingServiceErrors.NoBrewingsError;
+                }
+
+                var currentBrewingStatus = await GetBrewingStatusAsync(equipment.ConnectionString);
+                var brewingExists = await _context.Brewings.AnyAsync(b => b.Id == currentBrewingStatus.Id);
+                var brewing = new Brewing();
+                if (brewingExists)
+                {
+                    brewing = await _context.Brewings.Where(b => b.Id == currentBrewingStatus.Id).Include(b => b.BrewingLogs).Include(b => b.Recipe).Include(b => b.BrewerBrewingEquipment).ThenInclude(bE => bE.BrewingEquipment).FirstOrDefaultAsync();
+
+                }
+                else
+                {
+                    brewing.Id = currentBrewingStatus.Id;
+                    brewing.RecipeId = currentBrewingStatus.RecipeId;
+                    brewing.BrewerBrewingEquipmentId = equipmentId;
+                    brewing.CreatedAt = DateTime.Parse(currentBrewingStatus.CreatedAt);
+                    equipment.Brewings.Add(brewing);
+                }
+                Enum.TryParse(currentBrewingStatus.BrewingStatus, true, out Status parsedStatus);
+                brewing.Status = parsedStatus;
 
 
+                var brewLogs = new List<BrewingLog>();
+                foreach (var item in currentBrewingStatus.BrewingLogs)
+                {
+                    var isParsed = Enum.TryParse(item.StatusCode, true, out BrewingLogCode parsedLogCode);
+                    brewLogs.Add(new BrewingLog
+                    {
+                        BrewingId = brewing.Id,
+                        StatusCode = parsedLogCode,
+                        Message = item.Message,
+                        LogTime = DateTime.Parse(item.LogTime)
 
-                //IoT Logic
-
+                    });
+                }
+                brewing.BrewingLogs = brewLogs;
+                if (brewing.Status == Status.Aborted || brewing.Status == Status.Failed || brewing.Status == Status.Finished)
+                {
+                    equipment.IsBrewing = false;
+                }
+                await _context.SaveChangesAsync();
                 return new BrewingFullInfoDto
                 (
                     brewing.Id,
+                    brewing.RecipeId,
                     brewing.BrewerBrewingEquipment.BrewingEquipment.Name,
                     brewing.Recipe.Title,
                     Enum.GetName(typeof(Status), brewing.Status),
-                    brewing.BrewingLogs.Select(b => b.LogTime).LastOrDefault().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss"),
-                    _mapper.Map<IList<BrewingLogDto>>(brewing.BrewingLogs)
+                    currentBrewingStatus.LastUpdateDate,
+                    _mapper.Map<IList<BrewingLogDto>>(brewing.BrewingLogs),
+                    currentBrewingStatus.CreatedAt
                 );
             }
             catch (Exception ex)
@@ -165,6 +205,12 @@ namespace BLL.BrewingManagement
                 if (equipment.BrewerId != userId)
                 {
                     return BrewingEquipmentServiceErrors.NotYourEquipmentError;
+                }
+
+                var isReachable = await IsConnectionStringReachableAsync(equipment.ConnectionString);
+                if (!isReachable)
+                {
+                    return BrewingEquipmentServiceErrors.EquipmentIsNotReachableError;
                 }
 
                 var brewings = await _context.Brewings.Where(b => b.BrewerBrewingEquipmentId == equipmentId).OrderByDescending(b => b.CreatedAt).Include(b => b.BrewingLogs).Include(b => b.Recipe).Include(b => b.BrewerBrewingEquipment).ThenInclude(bE => bE.BrewingEquipment).ToListAsync();
@@ -208,6 +254,11 @@ namespace BLL.BrewingManagement
                     return BrewingEquipmentServiceErrors.NotYourEquipmentError;
                 }
 
+                var isReachable = await IsConnectionStringReachableAsync(equipment.ConnectionString);
+                if (!isReachable)
+                {
+                    return BrewingEquipmentServiceErrors.EquipmentIsNotReachableError;
+                }
 
                 if (equipment.IsBrewing)
                 {
@@ -243,9 +294,9 @@ namespace BLL.BrewingManagement
                 var brewingStatus = Enum.TryParse(equipmentStatus.BrewingStatus, out Status status);
                 var brewing = new Brewing { Id = equipmentStatus.Id, BrewerBrewingEquipmentId = equipmentId, RecipeId = recipeId, Status = status, BrewingLogs = _mapper.Map<ICollection<BrewingLog>>(equipmentStatus.BrewingLogs), CreatedAt = DateTime.Now };
                 brewing.BrewingLogs.Add(new BrewingLog { Brewing = brewing, StatusCode = BrewingLogCode.Info, Message = "Starting the brewing process", LogTime = DateTime.Now });
-                //IoT Logic
 
                 await _context.Brewings.AddAsync(brewing);
+                equipment.IsBrewing = true;
                 await _context.SaveChangesAsync();
                 return $"Successfully started brewing the \"{recipe.Title}\" on your \"{equipment.BrewingEquipment.Name}\"!";
             }
@@ -269,6 +320,186 @@ namespace BLL.BrewingManagement
                 else
                 {
                     throw new Exception($"Failed to start brewing on the IoT device. Status code: {response.StatusCode}");
+                }
+            }
+        }
+
+        private async Task<BrewingFullInfoDto> GetBrewingStatusAsync(string connectionString)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync($"{connectionString}brewingstatus");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var status = JsonConvert.DeserializeObject<BrewingFullInfoDto>(content);
+                    return status;
+                }
+                else
+                {
+                    throw new Exception($"Failed to get brewing status. Status code: {response.StatusCode}");
+                }
+            }
+        }
+
+        private async Task<int> GetBrewingHistoryCountAsync(string connectionString)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync($"{connectionString}history-count");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var status = JsonConvert.DeserializeObject<int>(content);
+                    return status;
+                }
+                else
+                {
+                    throw new Exception($"Failed to get brewing history count. Status code: {response.StatusCode}");
+                }
+            }
+        }
+
+        private async Task AbortBrewingAsync(string connectionString)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync($"{connectionString}abort");
+                if (response.IsSuccessStatusCode)
+                {
+                    return;
+                }
+                else
+                {
+                    throw new Exception($"Failed to get brewing history count. Status code: {response.StatusCode}");
+                }
+            }
+        }
+
+        private async Task<bool> IsConnectionStringReachableAsync(string connectionString)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                try
+                {
+                    var response = await httpClient.GetAsync($"{connectionString}is-reachable");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return true;
+                    }
+
+                    return false;
+
+                }
+                catch (HttpRequestException)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public async Task<Result<BrewerBrewingEquipmentFullInfoDto, Error>> UpdateConnectionStringAsync(EquipmentSettingsDto equipmentSettingsDto)
+        {
+
+            try
+            {
+                var isUserValid = _contextAccessor.TryGetUserId(out Guid userId);
+
+                if (!isUserValid)
+                {
+                    return UserErrors.InvalidUserId;
+                }
+
+                var equipment = await _context.BrewerBrewingEquipment.Where(bE => bE.Id == equipmentSettingsDto.EquipmentId).Include(bBE => bBE.BrewingEquipment).FirstOrDefaultAsync();
+
+                if (equipment is null)
+                {
+                    return BrewingEquipmentServiceErrors.GetEquipmentByIdError;
+                }
+
+                if (equipment.BrewerId != userId)
+                {
+                    return BrewingEquipmentServiceErrors.NotYourEquipmentError;
+                }
+
+                var isReachable = await IsConnectionStringReachableAsync(equipmentSettingsDto.ConnectionString);
+                if (!isReachable)
+                {
+                    return BrewingEquipmentServiceErrors.EquipmentIsNotReachableError;
+                }
+
+                equipment.ConnectionString = equipmentSettingsDto.ConnectionString;
+                _context.BrewerBrewingEquipment.Update(equipment);
+                await _context.SaveChangesAsync();
+                return _mapper.Map<BrewerBrewingEquipmentFullInfoDto>(equipment);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BLL.UpdateConnectionStringAsync ERROR: {ex.Message}");
+                return BrewingEquipmentServiceErrors.ChangeConnectionStringError;
+            }
+
+        }
+
+        public async Task<Result<EquipmentStatusDto, Error>> GetEquipmentStatusAsync(Guid equipmentId)
+        {
+            try
+            {
+                var isUserValid = _contextAccessor.TryGetUserId(out Guid userId);
+
+                if (!isUserValid)
+                {
+                    return UserErrors.InvalidUserId;
+                }
+
+                var equipment = await _context.BrewerBrewingEquipment.Where(bE => bE.Id == equipmentId).Include(bBE => bBE.BrewingEquipment).FirstOrDefaultAsync();
+
+                if (equipment is null)
+                {
+                    return BrewingEquipmentServiceErrors.GetEquipmentByIdError;
+                }
+
+                if (equipment.BrewerId != userId)
+                {
+                    return BrewingEquipmentServiceErrors.NotYourEquipmentError;
+                }
+
+                var isReachable = await IsConnectionStringReachableAsync(equipment.ConnectionString);
+                if (!isReachable)
+                {
+                    return BrewingEquipmentServiceErrors.EquipmentIsNotReachableError;
+                }
+
+                var connectionString = equipment.ConnectionString;
+                var status = await FetchStatusFromIoTDeviceAsync(connectionString);
+
+                equipment.IsBrewing = status.IsBrewing;
+                await _context.SaveChangesAsync();
+
+                var response = new EquipmentStatusDto(status.Temperature, status.Pressure, status.Humidity, status.Fullness, status.LastUpdate, status.IsBrewing);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BLL.GetEquipmentStatusAsync ERROR: {ex.Message}");
+                return BrewingEquipmentServiceErrors.GetEquipmentStatusError;
+            }
+        }
+        private async Task<EquipmentStatusDto> FetchStatusFromIoTDeviceAsync(string connectionString)
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync($"{connectionString}status");
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var status = JsonConvert.DeserializeObject<EquipmentStatusDto>(content);
+                    return status;
+                }
+                else
+                {
+                    throw new Exception($"Failed to fetch status from IoT device. Status code: {response.StatusCode}");
                 }
             }
         }

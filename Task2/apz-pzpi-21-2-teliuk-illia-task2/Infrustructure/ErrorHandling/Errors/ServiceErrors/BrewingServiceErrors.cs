@@ -21,6 +21,7 @@ namespace Infrustructure.ErrorHandling.Errors.ServiceErrors
         public static Error NoBrewingsNowError = new Error("No Brewings Now Error", "This equipment has no brewings now.");
         public static Error NoBrewingsError = new Error("No Brewings Error", "This equipment has no brewings.");
         public static Error NoBrewingLogsError = new Error("No Brewing Logs Error", "This equipment has no logs now.");
+
         public static Error DontHaveIngredientError(string ingredientName) => new Error("Don't Have Ingredient Error", $"You don't have {ingredientName} to cook this recipe.");
         public static Error DontHaveEnoughIngredientError(string ingredientName) => new Error("Don't Have Enough Ingredient Error", $"You don't have enough {ingredientName} to cook this recipe.");
     }

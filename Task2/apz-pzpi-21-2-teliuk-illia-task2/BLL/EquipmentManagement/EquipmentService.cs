@@ -187,81 +187,6 @@ namespace BLL.EquipmentManagement
             }
         }
 
-        public async Task<Result<EquipmentStatusDto, Error>> GetEquipmentStatusAsync(Guid equipmentId)
-        {
-            try
-            {
-                //Here will be some logic for connecting to the IoT device
-                var isUserValid = _contextAccessor.TryGetUserId(out Guid userId);
-
-                if (!isUserValid)
-                {
-                    return UserErrors.InvalidUserId;
-                }
-
-                var equipment = await _context.BrewerBrewingEquipment.Where(bE => bE.Id == equipmentId).Include(bBE => bBE.BrewingEquipment).FirstOrDefaultAsync();
-
-                if (equipment is null)
-                {
-                    return BrewingEquipmentServiceErrors.GetEquipmentByIdError;
-                }
-
-                if (equipment.BrewerId != userId)
-                {
-                    return BrewingEquipmentServiceErrors.NotYourEquipmentError;
-                }
-
-
-                var connectionString = equipment.ConnectionString;
-                var status = await FetchStatusFromIoTDeviceAsync(connectionString);
-
-                var response = new EquipmentStatusDto(status.Temperature, status.Pressure, status.Humidity, status.Fullness, status.LastUpdate, status.IsBrewing);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BLL.GetEquipmentStatusAsync ERROR: {ex.Message}");
-                return BrewingEquipmentServiceErrors.GetEquipmentStatusError;
-            }
-        }
-
-        public async Task<Result<BrewerBrewingEquipmentFullInfoDto, Error>> UpdateConnectionStringAsync(EquipmentSettingsDto equipmentSettingsDto)
-        {
-
-            try
-            {
-                var isUserValid = _contextAccessor.TryGetUserId(out Guid userId);
-
-                if (!isUserValid)
-                {
-                    return UserErrors.InvalidUserId;
-                }
-
-                var equipment = await _context.BrewerBrewingEquipment.Where(bE => bE.Id == equipmentSettingsDto.EquipmentId).Include(bBE => bBE.BrewingEquipment).FirstOrDefaultAsync();
-
-                if (equipment is null)
-                {
-                    return BrewingEquipmentServiceErrors.GetEquipmentByIdError;
-                }
-
-                if (equipment.BrewerId != userId)
-                {
-                    return BrewingEquipmentServiceErrors.NotYourEquipmentError;
-                }
-
-                equipment.ConnectionString = equipmentSettingsDto.ConnectionString;
-                _context.BrewerBrewingEquipment.Update(equipment);
-                await _context.SaveChangesAsync();
-                return _mapper.Map<BrewerBrewingEquipmentFullInfoDto>(equipment);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BLL.UpdateConnectionStringAsync ERROR: {ex.Message}");
-                return BrewingEquipmentServiceErrors.ChangeConnectionStringError;
-            }
-
-        }
 
         public async Task<Result<BrewingEquipmentFullInfoDto, Error>> UpdateEquipmentAsync(UpdateBrewingEquipmentDto updateBrewingEquipmentDto)
         {
@@ -300,23 +225,7 @@ namespace BLL.EquipmentManagement
             return equipment;
         }
 
-        private async Task<EquipmentStatusDto> FetchStatusFromIoTDeviceAsync(string connectionString)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.GetAsync($"{connectionString}status");
-                if (response.IsSuccessStatusCode)
-                {
-                    var content = await response.Content.ReadAsStringAsync();
-                    var status = JsonConvert.DeserializeObject<EquipmentStatusDto>(content);
-                    return status;
-                }
-                else
-                {
-                    throw new Exception($"Failed to fetch status from IoT device. Status code: {response.StatusCode}");
-                }
-            }
-        }
+       
 
     }
 }

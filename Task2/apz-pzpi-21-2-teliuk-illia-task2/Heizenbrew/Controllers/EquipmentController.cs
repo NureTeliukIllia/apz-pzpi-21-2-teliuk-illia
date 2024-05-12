@@ -142,37 +142,5 @@ namespace heisenbrew_api.Controllers
             return this.CreateResponse(result);
         }
 
-        /// <summary>
-        /// Update equipment's connection string.
-        /// </summary>
-        /// <param name="equipmentSettingsDto">The dto with info about equipment settings.</param>
-        /// <remarks>
-        /// If the operation is successful, it will return a corresponding message.
-        /// </remarks>
-        /// <returns>An IActionResult representing the result of the operation.</returns>
-        [Authorize]
-        [HttpPut("my-equipment/update-string")]
-        public async Task<IActionResult> UpdateConnectionString([FromBody] EquipmentSettingsDto equipmentSettingsDto)
-        {
-            var result = await _equipmentService.UpdateConnectionStringAsync(equipmentSettingsDto);
-            return this.CreateResponse(result);
-        }
-
-        /// <summary>
-        /// Gets an equipment's status.
-        /// </summary>
-        /// <param name="equipmentId">The id of the equipment to get its status.</param>
-        /// <remarks>
-        /// If the operation is successful, it will return a corresponding message.
-        /// </remarks>
-        /// <returns>An IActionResult representing the result of the operation.</returns>
-        [Authorize]
-        [HttpGet("status/{equipmentId}")]
-        public async Task<IActionResult> GetEquipmentStatus(Guid equipmentId)
-        {
-            var result = await _equipmentService.GetEquipmentStatusAsync(equipmentId);
-            return this.CreateResponse(result);
-        }
-
     }
 }
