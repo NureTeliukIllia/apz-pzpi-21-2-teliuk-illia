@@ -46,7 +46,7 @@ namespace heisenbrew_api.Controllers
         /// </remarks>
         /// <returns>An IActionResult representing the result of the operation.</returns>
         [Authorize]
-        [HttpGet("brewings/{equipmentId}")]
+        [HttpGet("equipment-brewings/{equipmentId}")]
         public async Task<IActionResult> StartBrewing(Guid equipmentId)
         {
             var result = await _brewingService.GetBrewingsAsync(equipmentId);
