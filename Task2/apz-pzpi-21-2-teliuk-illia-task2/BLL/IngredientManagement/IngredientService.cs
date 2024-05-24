@@ -91,7 +91,7 @@ namespace BLL.IngredientManagement
                 }
 
                 await _context.SaveChangesAsync();
-                return _mapper.Map<List<BrewerIngredientDto>>(user.Ingredients.ToList());
+                return _mapper.Map<List<BrewerIngredientDto>>(await _context.BrewerIngredients.Where(i => i.BrewerId == user.Id).Include(bI => bI.Ingredient).ToListAsync());
             }
             catch (Exception ex)
             {
