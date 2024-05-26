@@ -27,7 +27,7 @@ class Program
     {
         double totalWeight = recipe.Ingredients.Sum(ingredient => ingredient.Weight);
         int baseBrewingTime = config.GetValue<int>("AppSettings:BaseBrewingDelay");
-        baseBrewingTime += CalculateIngredientTime(totalWeight);
+        baseBrewingTime += CalculateIngredientTime(totalWeight) * 2;
 
 
         return baseBrewingTime;
@@ -92,6 +92,7 @@ class Program
                     continue;
                 }
                 currentBrewing.Status = Status.Filling;
+                var fillingTime = 0;
                 foreach (var ingredient in currentBrewing.Recipe.Ingredients)
                 {
                     if (isAborted)
@@ -102,6 +103,7 @@ class Program
                     lastUpdate = DateTime.Now;
                     var addingMessage = $"Adding {ingredient.Name}...";
                     var ingredientDelay = CalculateIngredientTime(ingredient.Weight);
+                    fillingTime += ingredientDelay;
                     currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = addingMessage, LogTime = lastUpdate });
                     Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {addingMessage}");
                     await Task.Delay(ingredientDelay);
@@ -117,7 +119,7 @@ class Program
                 var brewingMessage = "Brewing the beer...";
                 currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = brewingMessage, LogTime = lastUpdate });
                 Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {brewingMessage}");
-                await Task.Delay(CalculateBrewingTime(currentBrewing.Recipe));
+                await Task.Delay(CalculateBrewingTime(currentBrewing.Recipe) - fillingTime);
                 if (isAborted)
                 {
                     isAborted = false;
