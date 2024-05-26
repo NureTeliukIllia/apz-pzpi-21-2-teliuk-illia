@@ -1,16 +1,8 @@
 using Heisenbrew_iot;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Configuration;
+
 class Program
 {
     static int GetAvailablePort()
