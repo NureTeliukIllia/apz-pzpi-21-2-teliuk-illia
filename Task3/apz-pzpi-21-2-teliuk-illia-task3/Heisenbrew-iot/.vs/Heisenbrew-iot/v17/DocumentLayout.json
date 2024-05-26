@@ -7,10 +7,6 @@
       "RelativeMoniker": "D:0:0:{FB09F140-2C1D-4F9B-B05A-A416C7D2349E}|Heisenbrew-iot\\Heisenbrew-iot.csproj|solutionrelative:heisenbrew-iot\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FB09F140-2C1D-4F9B-B05A-A416C7D2349E}|Heisenbrew-iot\\Heisenbrew-iot.csproj|C:\\Users\\User\\Desktop\\apz-pzpi-21-2-teliuk-illia\\Task3\\apz-pzpi-21-2-teliuk-illia-task3\\Heisenbrew-iot\\heisenbrew-iot\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{FB09F140-2C1D-4F9B-B05A-A416C7D2349E}|Heisenbrew-iot\\Heisenbrew-iot.csproj|solutionrelative:heisenbrew-iot\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{FB09F140-2C1D-4F9B-B05A-A416C7D2349E}|Heisenbrew-iot\\Heisenbrew-iot.csproj|c:\\users\\user\\desktop\\apz-pzpi-21-2-teliuk-illia\\task3\\apz-pzpi-21-2-teliuk-illia-task3\\heisenbrew-iot\\heisenbrew-iot\\heisenbrew-iot.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
       "RelativeMoniker": "D:0:0:{FB09F140-2C1D-4F9B-B05A-A416C7D2349E}|Heisenbrew-iot\\Heisenbrew-iot.csproj|solutionrelative:heisenbrew-iot\\heisenbrew-iot.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
     },
@@ -30,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -42,7 +38,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "Heisenbrew-iot.http",
               "DocumentMoniker": "C:\\Users\\User\\Desktop\\apz-pzpi-21-2-teliuk-illia\\Task3\\apz-pzpi-21-2-teliuk-illia-task3\\Heisenbrew-iot\\Heisenbrew-iot\\Heisenbrew-iot.http",
               "RelativeDocumentMoniker": "Heisenbrew-iot\\Heisenbrew-iot.http",
@@ -63,33 +59,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\User\\Desktop\\apz-pzpi-21-2-teliuk-illia\\Task3\\apz-pzpi-21-2-teliuk-illia-task3\\Heisenbrew-iot\\Heisenbrew-iot\\appsettings.json",
-              "RelativeDocumentMoniker": "Heisenbrew-iot\\appsettings.json",
-              "ToolTip": "C:\\Users\\User\\Desktop\\apz-pzpi-21-2-teliuk-illia\\Task3\\apz-pzpi-21-2-teliuk-illia-task3\\Heisenbrew-iot\\Heisenbrew-iot\\appsettings.json",
-              "RelativeToolTip": "Heisenbrew-iot\\appsettings.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAVAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-05-26T12:57:29.821Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\User\\Desktop\\apz-pzpi-21-2-teliuk-illia\\Task3\\apz-pzpi-21-2-teliuk-illia-task3\\Heisenbrew-iot\\Heisenbrew-iot\\Program.cs",
               "RelativeDocumentMoniker": "Heisenbrew-iot\\Program.cs",
-              "ToolTip": "C:\\Users\\User\\Desktop\\apz-pzpi-21-2-teliuk-illia\\Task3\\apz-pzpi-21-2-teliuk-illia-task3\\Heisenbrew-iot\\Heisenbrew-iot\\Program.cs*",
-              "RelativeToolTip": "Heisenbrew-iot\\Program.cs*",
-              "ViewState": "AQIAAHkAAAAAAAAAAAAAwJAAAAAmAAAA",
+              "ToolTip": "C:\\Users\\User\\Desktop\\apz-pzpi-21-2-teliuk-illia\\Task3\\apz-pzpi-21-2-teliuk-illia-task3\\Heisenbrew-iot\\Heisenbrew-iot\\Program.cs",
+              "RelativeToolTip": "Heisenbrew-iot\\Program.cs",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAIwCcAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-05-25T00:17:09.639Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "Models.cs",
               "DocumentMoniker": "C:\\Users\\User\\Desktop\\apz-pzpi-21-2-teliuk-illia\\Task3\\apz-pzpi-21-2-teliuk-illia-task3\\Heisenbrew-iot\\Heisenbrew-iot\\Models.cs",
               "RelativeDocumentMoniker": "Heisenbrew-iot\\Models.cs",
@@ -101,7 +84,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "Dtos.cs",
               "DocumentMoniker": "C:\\Users\\User\\Desktop\\apz-pzpi-21-2-teliuk-illia\\Task3\\apz-pzpi-21-2-teliuk-illia-task3\\Heisenbrew-iot\\Heisenbrew-iot\\Dtos.cs",
               "RelativeDocumentMoniker": "Heisenbrew-iot\\Dtos.cs",
