@@ -1,5 +1,6 @@
 using Heisenbrew_iot;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,7 @@ using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Configuration;
 class Program
 {
     static int GetAvailablePort()
@@ -21,9 +22,43 @@ class Program
         return port;
     }
 
+    static int CalculateIngredientTime(double weight)
+    {
+
+        int timePer100Grams = config.GetValue<int>("AppSettings:DelayPer100Grams");
+        int addingTime = (int)(weight / 100) * timePer100Grams;
+
+        return addingTime;
+    }
+
+    static int CalculateBrewingTime(Recipe recipe)
+    {
+        double totalWeight = recipe.Ingredients.Sum(ingredient => ingredient.Weight);
+        int baseBrewingTime = config.GetValue<int>("AppSettings:BaseBrewingDelay");
+        baseBrewingTime += CalculateIngredientTime(totalWeight);
+
+
+        return baseBrewingTime;
+    }
+
+
     static async Task Main(string[] args)
     {
+        var appPassword = config.GetValue<string>("AppSettings:Password");
+
+        while (true)
+        {
+            Console.Write("Enter the password of the equipment: ");
+            var password = Console.ReadLine();
+
+            if (password == appPassword) break;
+
+            Console.WriteLine("Wrong password, try again!\n");
+
+        }
+
         var port = GetAvailablePort();
+
         var endpointThread = Task.Run(() => HandleEndpoints(port));
         var brewingThread = Task.Run(() => ManageBrewing());
 
@@ -46,6 +81,8 @@ class Program
 
     static async Task ManageBrewing()
     {
+        var InitialDelay = config.GetValue<int>("AppSettings:DelayPer100Grams");
+
         while (true)
         {
             if (isBrewing && currentBrewing != null)
@@ -55,7 +92,7 @@ class Program
                 var startingMessage = $"Starting brewing the {currentBrewing.Recipe.Title}...";
                 currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = startingMessage, LogTime = lastUpdate });
                 Console.WriteLine($"Starting brewing for recipe: {currentBrewing.Recipe.Title}");
-                await Task.Delay(2000);
+                await Task.Delay(InitialDelay);
 
                 if (isAborted)
                 {
@@ -70,11 +107,12 @@ class Program
                         break;
                     }
 
-                    var addingMessage = $"Adding {ingredient.Name}...";
                     lastUpdate = DateTime.Now;
+                    var addingMessage = $"Adding {ingredient.Name}...";
+                    var ingredientDelay = CalculateIngredientTime(ingredient.Weight);
                     currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = addingMessage, LogTime = lastUpdate });
                     Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {addingMessage}");
-                    await Task.Delay(3000);
+                    await Task.Delay(ingredientDelay);
 
                 }
                 if (isAborted)
@@ -87,7 +125,7 @@ class Program
                 var brewingMessage = "Brewing the beer...";
                 currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = brewingMessage, LogTime = lastUpdate });
                 Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {brewingMessage}");
-                await Task.Delay(15000);
+                await Task.Delay(CalculateBrewingTime(currentBrewing.Recipe));
                 if (isAborted)
                 {
                     isAborted = false;
@@ -153,6 +191,9 @@ class Program
                             Status = Status.Started,
                             CreatedAt = lastUpdate
                         };
+
+                        Console.WriteLine($"Aproximate brewing time: {CalculateBrewingTime(recipe)}");
+
                         var brewingDto = new BrewingFullInfoDto
                         (
                         currentBrewing.Id,
@@ -254,6 +295,11 @@ class Program
         await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
         response.Close();
     }
+
+    static IConfigurationRoot config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .Build();
 
     static bool isBrewing = false;
     static bool isAborted = false;
