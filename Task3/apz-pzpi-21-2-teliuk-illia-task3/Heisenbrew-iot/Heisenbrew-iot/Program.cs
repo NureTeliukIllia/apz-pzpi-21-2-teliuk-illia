@@ -240,17 +240,17 @@ class Program
             case "/abort":
                 if (isBrewing && currentBrewing != null)
                 {
+                    lastUpdate = DateTime.Now;
                     currentBrewing.Status = Status.Aborted;
                     var abortedMessage = "The brewing process was aborted.";
-                    currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = abortedMessage });
+                    currentBrewing.BrewingLogs.Add(new BrewingLog { StatusCode = BrewingLogCode.Info, Message = abortedMessage, LogTime = lastUpdate });
 
-                    Console.WriteLine($"[{DateTime.Now}] {BrewingLogCode.Info}: {abortedMessage}");
+                    Console.WriteLine($"[{lastUpdate}] {BrewingLogCode.Info}: {abortedMessage}");
 
                     brewingsHistory.Add(currentBrewing);
                     currentBrewing = null;
                     isBrewing = false;
                     isAborted = true;
-                    lastUpdate = DateTime.Now;
                     responseString = "Successfully aborted.";
 
                 }
