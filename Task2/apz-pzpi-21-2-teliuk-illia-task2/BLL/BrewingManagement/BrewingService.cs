@@ -376,6 +376,8 @@ namespace BLL.BrewingManagement
 
         private async Task<bool> IsConnectionStringReachableAsync(string connectionString)
         {
+            if (!(await IsValidURI(connectionString))) return false;
+
             using (var httpClient = new HttpClient())
             {
                 try
@@ -524,12 +526,17 @@ namespace BLL.BrewingManagement
             }
 
             var isReachable = await IsConnectionStringReachableAsync(equipment.ConnectionString);
-            if (!isReachable)
-            {
-                return BrewingEquipmentServiceErrors.EquipmentIsNotReachableError;
-            }
 
-            return true;
+            return isReachable;
+        }
+        private async Task<bool> IsValidURI(string uri)
+        {
+            if (!Uri.IsWellFormedUriString(uri, UriKind.Absolute))
+                return false;
+            Uri tmp;
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out tmp))
+                return false;
+            return tmp.Scheme == Uri.UriSchemeHttp || tmp.Scheme == Uri.UriSchemeHttps;
         }
     }
 }
