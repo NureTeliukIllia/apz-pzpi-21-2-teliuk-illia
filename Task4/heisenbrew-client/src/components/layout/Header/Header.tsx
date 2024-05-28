@@ -1,10 +1,10 @@
 import { FC } from "react";
 import styles from "./Header.module.scss";
-import { Button } from "../../components/Button/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { IHeaderProps } from "../../types/interfaces";
-import Logo from "../../components/Logo";
+import { Button } from "../../Button/Button";
+// import Logo from "../../components/Logo";
 
 export const Header: FC<IHeaderProps> = (props: IHeaderProps) => {
     const navigate = useNavigate();
@@ -21,7 +21,7 @@ export const Header: FC<IHeaderProps> = (props: IHeaderProps) => {
         <div className={styles["header"]}>
             <div className={styles["container"]}>
                 <div className={styles["logo__container"]}>
-                    <Logo />
+                    Logo
                 </div>
                 <div className={styles["current-page"]}>
                     <h1>{props.currentPage}</h1>

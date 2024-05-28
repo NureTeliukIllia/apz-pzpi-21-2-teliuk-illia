@@ -96,7 +96,7 @@ namespace BLL.RecipeManagement
             }
         }
 
-        public async Task<Result<RecipesListDto, Error>> GetOwnRecipesAsync(int pageNumber)
+        public async Task<Result<List<RecipeDto>, Error>> GetOwnRecipesAsync()
         {
             try
             {
@@ -107,7 +107,7 @@ namespace BLL.RecipeManagement
                     return UserErrors.InvalidUserId;
                 }
 
-                var result = await GetFilteredRecipesAsync(_context.Recipes.Where(r => r.BrewerId == userId), pageNumber);
+                var result = await GetFilteredRecipesAsync(_context.Recipes.Where(r => r.BrewerId == userId));
                 return result;
             }
             catch (Exception ex)
@@ -138,11 +138,11 @@ namespace BLL.RecipeManagement
             }
         }
 
-        public async Task<Result<RecipesListDto, Error>> GetAllRecipesAsync(int pageNumber)
+        public async Task<Result<List<RecipeDto>, Error>> GetAllRecipesAsync()
         {
             try
             {
-                var result = await GetFilteredRecipesAsync(_context.Recipes, pageNumber);
+                var result = await GetFilteredRecipesAsync(_context.Recipes);
                 return result;
             }
             catch (Exception ex)
@@ -289,33 +289,23 @@ namespace BLL.RecipeManagement
             }
         }
 
-        private async Task<Result<RecipesListDto, Error>> GetFilteredRecipesAsync(IQueryable<Recipe> query, int pageNumber)
+        private async Task<Result<List<RecipeDto>, Error>> GetFilteredRecipesAsync(IQueryable<Recipe> query)
         {
             try
             {
                 var isUserValid = _contextAccessor.TryGetUserId(out Guid userId);
 
 
-                var recipes = await query.Include(r => r.Ingredients).ThenInclude(rI => rI.Ingredient).Skip(pageNumber * 5).Take(5).ToListAsync();
+                var recipes = await query.Include(r => r.Brewer).Include(r => r.Ingredients).ThenInclude(rI => rI.Ingredient).ToListAsync();
                 var dtos = new List<RecipeDto>();
-                var totalPages = (query.Count() + 10 - 1) / 10;
-                var votesCountQuery = _context.Votes.AsQueryable();
-                var userVoteQuery = _context.Votes.Where(r => r.BrewerId == userId);
+                
                 await recipes.ForEachAsync(async recipe =>
                 {
-                    var upvotesCount = await votesCountQuery.Where(v => v.RecipeId == recipe.Id && v.IsPositive).CountAsync();
-                    var downvotesCount = await votesCountQuery.Where(v => v.RecipeId == recipe.Id && !v.IsPositive).CountAsync();
-                    var userVoteStatus = isUserValid ? await userVoteQuery.AnyAsync(v => v.RecipeId == recipe.Id && v.IsPositive)
-                        ? nameof(VoteStatus.UPVOTED)
-                        : await userVoteQuery.AnyAsync(v => v.RecipeId == recipe.Id && !v.IsPositive)
-                            ? nameof(VoteStatus.DOWNVOTED)
-                            : nameof(VoteStatus.UNVOTED) : nameof(VoteStatus.UNVOTED);
-
-                    dtos.Add(new RecipeDto(recipe.Id, recipe.Title, recipe.Description, _mapper.Map<IList<RecipeIngredientDto>>(recipe.Ingredients), upvotesCount, downvotesCount, userVoteStatus, await GetRecipeCookingPrice(recipe.Id)));
+                    
+                    dtos.Add(new RecipeDto(recipe.Id, recipe.Title, recipe.Description, _mapper.Map<IList<RecipeIngredientDto>>(recipe.Ingredients), $"{recipe.Brewer.FirstName} {recipe.Brewer.LastName}" ,await GetRecipeCookingPrice(recipe.Id)));
                 });
-                var result = new RecipesListDto(dtos, totalPages);
 
-                return result;
+                return dtos;
 
             }
             catch (Exception e)

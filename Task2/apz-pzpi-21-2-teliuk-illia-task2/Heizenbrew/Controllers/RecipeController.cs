@@ -27,9 +27,9 @@ namespace heisenbrew_api.Controllers
         /// </remarks>
         /// <returns>An IActionResult representing the result of the operation.</returns>
         [HttpGet]
-        public async Task<IActionResult> GetAllRecipes([FromQuery] int page = 0)
+        public async Task<IActionResult> GetAllRecipes()
         {
-            var result = await _recipeService.GetAllRecipesAsync(page);
+            var result = await _recipeService.GetAllRecipesAsync();
 
             return this.CreateResponse(result);
         }
@@ -45,9 +45,9 @@ namespace heisenbrew_api.Controllers
         /// <returns>An IActionResult representing the result of the operation.</returns>
         [HttpGet("my-recipes")]
         [Authorize]
-        public async Task<IActionResult> GetMyRecipes([FromQuery] int page = 0)
+        public async Task<IActionResult> GetMyRecipes()
         {
-            var result = await _recipeService.GetOwnRecipesAsync(page);
+            var result = await _recipeService.GetOwnRecipesAsync();
 
             return this.CreateResponse(result);
         }

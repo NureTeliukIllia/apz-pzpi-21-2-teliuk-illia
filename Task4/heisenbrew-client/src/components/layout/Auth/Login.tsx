@@ -1,4 +1,3 @@
-import styles from "./Auth.module.scss";
 import { LockOutlined } from "@mui/icons-material";
 import {
     Container,
@@ -12,8 +11,9 @@ import { FC, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signIn } from "../../services/authApi";
 import { toast } from "react-toastify";
-import { Button } from "../../components/Button/Button";
 import { IAuthProps } from "../../types/interfaces";
+import { Button } from "../../Button/Button";
+import styles from "./Auth.module.scss";
 
 const Login: FC<IAuthProps> = (props: IAuthProps) => {
     const [email, setEmail] = useState("");
@@ -24,6 +24,7 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
         const response = signIn({ email: email, password: password });
         response
             .then((data) => {
+                console.log("User: ", data);
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("userRole", data.userRole);
                 localStorage.setItem("bearer", data.bearer);
@@ -112,7 +113,9 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
                         <Grid container justifyContent={"flex-end"}>
                             <Grid item>
                                 <Link
-                                    onClick={() => props.setCurrentPage("Sign Up")}
+                                    onClick={() =>
+                                        props.setCurrentPage("Sign Up")
+                                    }
                                     to="/register"
                                     className={styles["Link"]}
                                 >

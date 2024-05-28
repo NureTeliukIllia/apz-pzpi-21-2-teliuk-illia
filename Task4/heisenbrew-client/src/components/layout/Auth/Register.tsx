@@ -12,8 +12,8 @@ import { FC, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signUp } from "../../services/authApi";
 import { toast } from "react-toastify";
-import { Button } from "../../components/Button/Button";
 import { IAuthProps } from "../../types/interfaces";
+import { Button } from "../../Button/Button";
 
 const Register: FC<IAuthProps> = (props: IAuthProps) => {
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,7 +22,7 @@ const Register: FC<IAuthProps> = (props: IAuthProps) => {
     const navigate = useNavigate();
 
     const handleSignUp = async () => {
-        if (password == confirmPassword) {
+        if (password === confirmPassword) {
             const response = signUp({ email: email, password: password });
             response
                 .then((data) => {
