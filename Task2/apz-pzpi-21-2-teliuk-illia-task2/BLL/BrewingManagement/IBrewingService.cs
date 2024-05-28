@@ -18,6 +18,7 @@ namespace BLL.BrewingManagement
         public Task<Result<List<BrewingShortInfoDto>, Error>> GetBrewingsAsync(Guid equipmentId);
         public Task<Result<BrewerBrewingEquipmentFullInfoDto, Error>> UpdateConnectionStringAsync(EquipmentSettingsDto equipmentSettingsDto);
         public Task<Result<EquipmentStatusDto, Error>> GetEquipmentStatusAsync(Guid equipmentId);
+        public Task<Result<bool, Error>> GetEquipmentAvailabilityAsync(Guid equipmentId);
 
     }
 }

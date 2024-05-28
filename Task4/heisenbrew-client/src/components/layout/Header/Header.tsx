@@ -2,9 +2,9 @@ import { FC } from "react";
 import styles from "./Header.module.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { IHeaderProps } from "../../types/interfaces";
+import { IHeaderProps } from "../../../types/interfaces";
 import { Button } from "../../Button/Button";
-// import Logo from "../../components/Logo";
+import logo from "../../../assets/logo-transparent-svg.svg";
 
 export const Header: FC<IHeaderProps> = (props: IHeaderProps) => {
     const navigate = useNavigate();
@@ -21,7 +21,7 @@ export const Header: FC<IHeaderProps> = (props: IHeaderProps) => {
         <div className={styles["header"]}>
             <div className={styles["container"]}>
                 <div className={styles["logo__container"]}>
-                    Logo
+                    <img src={logo} alt="logo" />
                 </div>
                 <div className={styles["current-page"]}>
                     <h1>{props.currentPage}</h1>
@@ -36,17 +36,17 @@ export const Header: FC<IHeaderProps> = (props: IHeaderProps) => {
                     </Link>
                     <Link
                         className={styles["nav-link"]}
-                        to={props.isLogged ? "/my-songs" : "/login"}
+                        to={props.isLogged ? "/me" : "/login"}
                         onClick={() => {
                             if (props.isLogged) {
-                                props.setCurrentPage("My Songs");
+                                props.setCurrentPage("My Profile");
                             } else {
                                 props.setCurrentPage("Login");
                                 toast.warn("You need to login first.");
                             }
                         }}
                     >
-                        My Songs
+                        My Profile
                     </Link>
                 </nav>
                 <div className={styles["auth"]}>

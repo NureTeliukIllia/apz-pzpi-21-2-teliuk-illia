@@ -207,13 +207,11 @@ namespace BLL.BrewingManagement
                     return BrewingEquipmentServiceErrors.NotYourEquipmentError;
                 }
 
-                var isReachable = await IsConnectionStringReachableAsync(equipment.ConnectionString);
-                if (!isReachable)
-                {
-                    return BrewingEquipmentServiceErrors.EquipmentIsNotReachableError;
-                }
+                await GetBrewingStatusAsync(equipmentId);
 
                 var brewings = await _context.Brewings.Where(b => b.BrewerBrewingEquipmentId == equipmentId).OrderByDescending(b => b.CreatedAt).Include(b => b.BrewingLogs).Include(b => b.Recipe).Include(b => b.BrewerBrewingEquipment).ThenInclude(bE => bE.BrewingEquipment).ToListAsync();
+
+
 
                 return brewings.Select(brewing => new BrewingShortInfoDto
                 (
@@ -502,6 +500,36 @@ namespace BLL.BrewingManagement
                     throw new Exception($"Failed to fetch status from IoT device. Status code: {response.StatusCode}");
                 }
             }
+        }
+
+        public async Task<Result<bool, Error>> GetEquipmentAvailabilityAsync(Guid equipmentId)
+        {
+            var isUserValid = _contextAccessor.TryGetUserId(out Guid userId);
+
+            if (!isUserValid)
+            {
+                return UserErrors.InvalidUserId;
+            }
+
+            var equipment = await _context.BrewerBrewingEquipment.Where(bE => bE.Id == equipmentId).Include(bBE => bBE.BrewingEquipment).FirstOrDefaultAsync();
+
+            if (equipment is null)
+            {
+                return BrewingEquipmentServiceErrors.GetEquipmentByIdError;
+            }
+
+            if (equipment.BrewerId != userId)
+            {
+                return BrewingEquipmentServiceErrors.NotYourEquipmentError;
+            }
+
+            var isReachable = await IsConnectionStringReachableAsync(equipment.ConnectionString);
+            if (!isReachable)
+            {
+                return BrewingEquipmentServiceErrors.EquipmentIsNotReachableError;
+            }
+
+            return true;
         }
     }
 }

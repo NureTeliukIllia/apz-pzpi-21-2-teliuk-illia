@@ -9,7 +9,6 @@ namespace Infrustructure.Dto.UserProfile
     public record UpdateBrewerProfileDto
     (   
         string FirstName,
-        string LastName,
-        string ProfileColor
+        string LastName
     );
 }

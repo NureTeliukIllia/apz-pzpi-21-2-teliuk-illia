@@ -7,7 +7,10 @@ import Register from "./components/layout/Auth/Register";
 import NotFound from "./components/layout/NotFound/NotFound";
 import { ToastContainer } from "react-toastify";
 import Home from "./components/layout/Home/Home";
-
+import EquipmentDetails from "./components/layout/EquipmentDetails";
+import RecipeDetails from "./components/layout/RecipeDetails";
+import OwnProfilePage from "./components/layout/OwnProfilePage";
+import MyEquipmentPage from "./components/layout/EquipmentBrewingPage";
 
 function App() {
     const user = localStorage.getItem("userId");
@@ -24,38 +27,36 @@ function App() {
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
             />
-            <ToastContainer className="toast" />
             <Routes>
-                <Route
-                    path="/"
-                    element={
-                        <Home
-
-                        />
-                    }
-                />
+                <Route path="/" element={<Home />} />
                 <Route
                     path="/login"
                     element={
-                            <Login
-                                setIsLogged={setIsLogged}
-                                currentPage={currentPage}
-                                setCurrentPage={setCurrentPage}
-                            />
+                        <Login
+                            setIsLogged={setIsLogged}
+                            currentPage={currentPage}
+                            setCurrentPage={setCurrentPage}
+                        />
                     }
                 />
                 <Route
                     path="/register"
                     element={
-                            <Register
-                                setIsLogged={setIsLogged}
-                                currentPage={currentPage}
-                                setCurrentPage={setCurrentPage}
-                            />
+                        <Register
+                            setIsLogged={setIsLogged}
+                            currentPage={currentPage}
+                            setCurrentPage={setCurrentPage}
+                        />
                     }
                 />
+                <Route path="/equipment/:id" element={<EquipmentDetails />} />
+                <Route path="/recipe/:id" element={<RecipeDetails />} />
+                <Route path="/me" element={<OwnProfilePage />} />
+                <Route path="/my-equipment/:id" element={<MyEquipmentPage />} />
+
                 <Route path="*" element={<NotFound />} />
             </Routes>
+            <ToastContainer position="bottom-right" className="toast" />
         </>
     );
 }

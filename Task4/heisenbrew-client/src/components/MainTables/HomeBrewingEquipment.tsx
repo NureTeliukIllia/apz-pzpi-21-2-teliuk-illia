@@ -12,39 +12,32 @@ import {
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
-interface RecipeIngredientDto {
+interface HomeBrewingEquipmentShortInfoDto {
     id: string;
     name: string;
-    weight: number;
+    price: number;
 }
 
-interface RecipeDto {
-    id: string;
-    title: string;
-    description: string;
-    ingredients: RecipeIngredientDto[];
-    brewerName: string;
-    cookingPrice: number;
+interface HomeBrewingEquipmentProps {
+    data: HomeBrewingEquipmentShortInfoDto[];
 }
 
-interface RecipeProps {
-    data: RecipeDto[];
-}
-
-const Recipe: React.FC<RecipeProps> = ({ data }) => {
+const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
+    data,
+}) => {
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
 
     const handleBuy = (id: string) => {
-        console.log(`Buy Recipe with id: ${id}`);
+        console.log(`Buy Equipment with id: ${id}`);
     };
 
     const handleUpdate = (id: string) => {
-        console.log(`Update Recipe with id: ${id}`);
+        console.log(`Update Equipment with id: ${id}`);
     };
 
     const handleDelete = (id: string) => {
-        console.log(`Delete Recipe with id: ${id}`);
+        console.log(`Delete Equipment with id: ${id}`);
     };
 
     return (
@@ -52,35 +45,29 @@ const Recipe: React.FC<RecipeProps> = ({ data }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{ fontSize: "2rem" }}>Title</TableCell>
-                        <TableCell sx={{ fontSize: "2rem" }}>
-                            Description
+                        <TableCell sx={{ fontSize: "1.5rem" }}>Name</TableCell>
+                        <TableCell sx={{ fontSize: "1.5rem" }}>Price</TableCell>
+                        <TableCell sx={{ fontSize: "1.5rem" }}>
+                            Actions
                         </TableCell>
-                        <TableCell sx={{ fontSize: "2rem" }}>
-                            Brewer Name
-                        </TableCell>
-                        <TableCell sx={{ fontSize: "2rem" }}>
-                            Cooking Price
-                        </TableCell>
-                        <TableCell sx={{ fontSize: "2rem" }}>Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {data.map((item) => (
                         <TableRow key={item.id}>
-                            <TableCell sx={{ fontSize: "2rem" }}>
-                                {item.title}
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                                <Link
+                                    component={RouterLink}
+                                    to={`/equipment/${item.id}`}
+                                    sx={{ fontSize: "1.5rem" }}
+                                >
+                                    {item.name}
+                                </Link>
                             </TableCell>
-                            <TableCell sx={{ fontSize: "2rem" }}>
-                                {item.description}
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                                {item.price}
                             </TableCell>
-                            <TableCell sx={{ fontSize: "2rem" }}>
-                                {item.brewerName}
-                            </TableCell>
-                            <TableCell sx={{ fontSize: "2rem" }}>
-                                {item.cookingPrice}
-                            </TableCell>
-                            <TableCell sx={{ fontSize: "2rem" }}>
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
                                 {isLogged ? (
                                     <>
                                         <Button
@@ -140,4 +127,4 @@ const Recipe: React.FC<RecipeProps> = ({ data }) => {
     );
 };
 
-export default Recipe;
+export default HomeBrewingEquipment;

@@ -12,30 +12,32 @@ import {
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
-interface IngredientDto {
+interface RecipeDto {
     id: string;
-    name: string;
-    price: number;
+    title: string;
+    description: string;
+    brewerName: string;
+    cookingPrice: number;
 }
 
-interface IngredientProps {
-    data: IngredientDto[];
+interface HomeRecipesProps {
+    data: RecipeDto[];
 }
 
-const Ingredient: React.FC<IngredientProps> = ({ data }) => {
+const HomeRecipes: React.FC<HomeRecipesProps> = ({ data }) => {
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
 
     const handleBuy = (id: string) => {
-        console.log(`Buy Ingredient with id: ${id}`);
+        console.log(`Buy Recipe with id: ${id}`);
     };
 
     const handleUpdate = (id: string) => {
-        console.log(`Update Ingredient with id: ${id}`);
+        console.log(`Update Recipe with id: ${id}`);
     };
 
     const handleDelete = (id: string) => {
-        console.log(`Delete Ingredient with id: ${id}`);
+        console.log(`Delete Recipe with id: ${id}`);
     };
 
     return (
@@ -43,27 +45,49 @@ const Ingredient: React.FC<IngredientProps> = ({ data }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{ fontSize: "2rem" }}>Name</TableCell>
-                        <TableCell sx={{ fontSize: "2rem" }}>Price</TableCell>
-                        <TableCell sx={{ fontSize: "2rem" }}>Actions</TableCell>
+                        <TableCell sx={{ fontSize: "1.5rem" }}>Title</TableCell>
+                        <TableCell sx={{ fontSize: "1.5rem" }}>
+                            Description
+                        </TableCell>
+                        <TableCell sx={{ fontSize: "1.5rem" }}>
+                            Brewer
+                        </TableCell>
+                        <TableCell sx={{ fontSize: "1.5rem" }}>
+                            Cooking Price
+                        </TableCell>
+                        <TableCell sx={{ fontSize: "1.5rem" }}>
+                            Actions
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {data.map((item) => (
                         <TableRow key={item.id}>
-                            <TableCell sx={{ fontSize: "2rem" }}>
-                                {item.name}
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                                <Link
+                                    component={RouterLink}
+                                    to={`/recipe/${item.id}`}
+                                    sx={{ fontSize: "1.5rem" }}
+                                >
+                                    {item.title}
+                                </Link>
                             </TableCell>
-                            <TableCell sx={{ fontSize: "2rem" }}>
-                                {item.price}
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                                {item.description}
                             </TableCell>
-                            <TableCell>
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                                {item.brewerName}
+                            </TableCell>
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                                ${item.cookingPrice}
+                            </TableCell>
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
                                 {isLogged ? (
                                     <>
                                         <Button
                                             variant="contained"
                                             color="primary"
-                                            sx={{ fontSize: "2rem" }}
+                                            sx={{ fontSize: "1.2rem" }}
                                             onClick={() => handleBuy(item.id)}
                                         >
                                             Buy
@@ -74,7 +98,7 @@ const Ingredient: React.FC<IngredientProps> = ({ data }) => {
                                                     variant="contained"
                                                     color="secondary"
                                                     sx={{
-                                                        fontSize: "2rem",
+                                                        fontSize: "1.2rem",
                                                         marginLeft: 1,
                                                     }}
                                                     onClick={() =>
@@ -87,7 +111,7 @@ const Ingredient: React.FC<IngredientProps> = ({ data }) => {
                                                     variant="contained"
                                                     color="error"
                                                     sx={{
-                                                        fontSize: "2rem",
+                                                        fontSize: "1.2rem",
                                                         marginLeft: 1,
                                                     }}
                                                     onClick={() =>
@@ -103,7 +127,7 @@ const Ingredient: React.FC<IngredientProps> = ({ data }) => {
                                     <Link
                                         component={RouterLink}
                                         to="/login"
-                                        sx={{ fontSize: "2rem" }}
+                                        sx={{ fontSize: "1.2rem" }}
                                     >
                                         Login first!
                                     </Link>
@@ -117,4 +141,4 @@ const Ingredient: React.FC<IngredientProps> = ({ data }) => {
     );
 };
 
-export default Ingredient;
+export default HomeRecipes;

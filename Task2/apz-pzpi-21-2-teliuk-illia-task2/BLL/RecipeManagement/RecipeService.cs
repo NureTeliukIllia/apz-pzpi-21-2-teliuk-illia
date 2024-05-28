@@ -122,14 +122,15 @@ namespace BLL.RecipeManagement
             try
             {
 
-                var recipe = await _context.Recipes.Include(r => r.Ingredients).ThenInclude(rI => rI.Ingredient).FirstOrDefaultAsync(r => r.Id == recipeId);
+                var recipe = await _context.Recipes.Include(r => r.Brewer).Include(r => r.Ingredients).ThenInclude(rI => rI.Ingredient).FirstOrDefaultAsync(r => r.Id == recipeId);
 
                 if(recipe is null)
                 {
                     return RecipeServiceErrors.GetRecipeByIdError;
                 }
 
-                return _mapper.Map<RecipeDto>(recipe);
+                var res = new RecipeDto(recipeId, recipe.Title, recipe.Description,_mapper.Map<List<RecipeIngredientDto>> (recipe.Ingredients.ToList()), $"{recipe.Brewer.FirstName} {recipe.Brewer.LastName}", await GetRecipeCookingPrice(recipeId));
+                return res;
             }
             catch (Exception ex)
             {

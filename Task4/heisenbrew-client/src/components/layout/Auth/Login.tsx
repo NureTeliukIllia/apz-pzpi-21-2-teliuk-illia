@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import { FC, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signIn } from "../../services/authApi";
+import { signIn } from "../../../services/authApi";
 import { toast } from "react-toastify";
-import { IAuthProps } from "../../types/interfaces";
+import { IAuthProps } from "../../../types/interfaces";
 import { Button } from "../../Button/Button";
 import styles from "./Auth.module.scss";
 
@@ -44,7 +44,7 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
 
     return (
         <>
-            <Container maxWidth="lg">
+            <Container style={{ marginTop: "1rem" }} maxWidth="lg">
                 <Box
                     className={styles["Auth-box"]}
                     sx={{

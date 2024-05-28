@@ -10,6 +10,7 @@
     color: white;
     box-shadow: 0 3px 4px -1px gray;
     overflow: hidden;
+    z-index: 100000;
 
     .current-page {
         font-size: 4rem;
@@ -29,7 +30,7 @@
         align-items: center;
 
         .logo__container {
-            width: 15%;
+            width: 25%;
             overflow: hidden;
         }
 

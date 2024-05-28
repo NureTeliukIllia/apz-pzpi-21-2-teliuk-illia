@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Core.Models;
+using Core.Models.Equipment;
+using Infrustructure.Dto.Equipment;
 using Infrustructure.Dto.Recipe;
 
 namespace heisenbrew_api.Mapper
@@ -9,7 +11,8 @@ namespace heisenbrew_api.Mapper
         public RecipeFeatures()
         {
             CreateMap<Recipe, RecipeDto>()
-                .ForMember(rD => rD.Ingredients, opt => opt.MapFrom(r => r.Ingredients));
+                .ForCtorParam(nameof(RecipeDto.BrewerName), otp => otp.MapFrom(src => $"{src.Brewer.FirstName} {src.Brewer.LastName}"))
+                .ForCtorParam(nameof(RecipeDto.Ingredients), otp => otp.MapFrom(src => src.Ingredients));
 
             CreateMap<CreateRecipeDto, Recipe>();
             CreateMap<UpdateRecipeDto, Recipe>();

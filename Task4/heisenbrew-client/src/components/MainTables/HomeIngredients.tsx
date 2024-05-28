@@ -12,30 +12,30 @@ import {
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 
-interface BrewingEquipmentShortInfoDto {
+interface HomeIngredientsDto {
     id: string;
     name: string;
     price: number;
 }
 
-interface BrewingEquipmentProps {
-    data: BrewingEquipmentShortInfoDto[];
+interface HomeIngredientsProps {
+    data: HomeIngredientsDto[];
 }
 
-const BrewingEquipment: React.FC<BrewingEquipmentProps> = ({ data }) => {
+const HomeIngredients: React.FC<HomeIngredientsProps> = ({ data }) => {
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
 
     const handleBuy = (id: string) => {
-        console.log(`Buy Equipment with id: ${id}`);
+        console.log(`Buy HomeIngredients with id: ${id}`);
     };
 
     const handleUpdate = (id: string) => {
-        console.log(`Update Equipment with id: ${id}`);
+        console.log(`Update HomeIngredients with id: ${id}`);
     };
 
     const handleDelete = (id: string) => {
-        console.log(`Delete Equipment with id: ${id}`);
+        console.log(`Delete HomeIngredients with id: ${id}`);
     };
 
     return (
@@ -57,13 +57,13 @@ const BrewingEquipment: React.FC<BrewingEquipmentProps> = ({ data }) => {
                             <TableCell sx={{ fontSize: "2rem" }}>
                                 {item.price}
                             </TableCell>
-                            <TableCell sx={{ fontSize: "2rem" }}>
+                            <TableCell>
                                 {isLogged ? (
                                     <>
                                         <Button
                                             variant="contained"
                                             color="primary"
-                                            sx={{ fontSize: "1.2rem" }}
+                                            sx={{ fontSize: "2rem" }}
                                             onClick={() => handleBuy(item.id)}
                                         >
                                             Buy
@@ -74,7 +74,7 @@ const BrewingEquipment: React.FC<BrewingEquipmentProps> = ({ data }) => {
                                                     variant="contained"
                                                     color="secondary"
                                                     sx={{
-                                                        fontSize: "1.2rem",
+                                                        fontSize: "2rem",
                                                         marginLeft: 1,
                                                     }}
                                                     onClick={() =>
@@ -87,7 +87,7 @@ const BrewingEquipment: React.FC<BrewingEquipmentProps> = ({ data }) => {
                                                     variant="contained"
                                                     color="error"
                                                     sx={{
-                                                        fontSize: "1.2rem",
+                                                        fontSize: "2rem",
                                                         marginLeft: 1,
                                                     }}
                                                     onClick={() =>
@@ -103,7 +103,7 @@ const BrewingEquipment: React.FC<BrewingEquipmentProps> = ({ data }) => {
                                     <Link
                                         component={RouterLink}
                                         to="/login"
-                                        sx={{ fontSize: "1.2rem" }}
+                                        sx={{ fontSize: "2rem" }}
                                     >
                                         Login first!
                                     </Link>
@@ -117,4 +117,4 @@ const BrewingEquipment: React.FC<BrewingEquipmentProps> = ({ data }) => {
     );
 };
 
-export default BrewingEquipment;
+export default HomeIngredients;
