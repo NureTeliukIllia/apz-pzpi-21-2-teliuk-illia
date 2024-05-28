@@ -65,7 +65,11 @@ const MyEquipmentPage: React.FC = () => {
         useState<BrewerBrewingEquipmentFullInfoDto | null>(null);
     const [connectionString, setConnectionString] = useState("");
     const [isAvailable, setIsAvailable] = useState(false);
-    const [logs, setLogs] = useState<string | JSX.Element>("");
+    const [isBrewing, setIsBrewing] = useState(false);
+    const [brewingLogs, setBrewingLogs] = useState<string | JSX.Element>("");
+    const [equipmentLogs, setEquipmentLogs] = useState<string | JSX.Element>(
+        "",
+    );
     const [recipes, setRecipes] = useState<RecipeDto[]>([]);
     const [selectedRecipe, setSelectedRecipe] = useState<RecipeDto | null>(
         null,
@@ -95,32 +99,35 @@ const MyEquipmentPage: React.FC = () => {
 
     const checkEquipmentStatus = async () => {
         try {
-            const availabilityResponse = (await getEquipmentAvailability(
-                id!,
-            )) as unknown as boolean;
+            const availabilityResponse = await getEquipmentAvailability(id!);
             setIsAvailable(availabilityResponse);
 
             if (!availabilityResponse) {
-                setLogs(
+                setBrewingLogs(
+                    "The device is not available, check your connection string!",
+                );
+                setEquipmentLogs(
                     "The device is not available, check your connection string!",
                 );
             } else {
-                const equipmentStatusResponse = (await getEquipmentStatus(
-                    id!,
-                )) as unknown as EquipmentStatusDto;
+                const equipmentStatusResponse = await getEquipmentStatus(id!);
+
                 if (equipmentStatusResponse.isBrewing) {
-                    const brewingStatusResponse =
-                        (await getCurrentBrewingStatus(
-                            id!,
-                        )) as unknown as BrewingFullInfoDto;
-                    setLogs(
+                    setIsBrewing(true);
+                    const brewingStatusResponse = await getCurrentBrewingStatus(
+                        id!,
+                    );
+                    setBrewingLogs(
                         <Box>
                             {brewingStatusResponse.brewingLogs.map(
-                                (log, index) => (
+                                (log: any, index: number) => (
                                     <Typography
                                         key={index}
                                         variant="body2"
-                                        sx={{ fontSize: "1.5rem" }}
+                                        sx={{
+                                            fontSize: "1.5rem",
+                                            textAlign: "left",
+                                        }}
                                     >
                                         [{log.logTime}] {log.statusCode}:{" "}
                                         {log.message}
@@ -130,43 +137,44 @@ const MyEquipmentPage: React.FC = () => {
                         </Box>,
                     );
                 } else {
-                    setLogs(
-                        <Box>
-                            <Typography
-                                variant="body2"
-                                sx={{ fontSize: "1.5rem" }}
-                            >
-                                Temperature:{" "}
-                                {equipmentStatusResponse.temperature}°C
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{ fontSize: "1.5rem" }}
-                            >
-                                Pressure: {equipmentStatusResponse.pressure} Pa
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{ fontSize: "1.5rem" }}
-                            >
-                                Humidity: {equipmentStatusResponse.humidity} %
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{ fontSize: "1.5rem" }}
-                            >
-                                Fullness: {equipmentStatusResponse.fullness} %
-                            </Typography>
-                            <Typography
-                                variant="body2"
-                                sx={{ fontSize: "1.5rem" }}
-                            >
-                                Last Update:{" "}
-                                {equipmentStatusResponse.lastUpdate}
-                            </Typography>
-                        </Box>,
-                    );
+                    setIsBrewing(false);
+                    setBrewingLogs("No brewings yet.");
                 }
+
+                setEquipmentLogs(
+                    <Box>
+                        <Typography
+                            variant="body2"
+                            sx={{ fontSize: "1.5rem", textAlign: "left" }}
+                        >
+                            Temperature: {equipmentStatusResponse.temperature}°C
+                        </Typography>
+                        <Typography
+                            variant="body2"
+                            sx={{ fontSize: "1.5rem", textAlign: "left" }}
+                        >
+                            Pressure: {equipmentStatusResponse.pressure} Pa
+                        </Typography>
+                        <Typography
+                            variant="body2"
+                            sx={{ fontSize: "1.5rem", textAlign: "left" }}
+                        >
+                            Humidity: {equipmentStatusResponse.humidity} %
+                        </Typography>
+                        <Typography
+                            variant="body2"
+                            sx={{ fontSize: "1.5rem", textAlign: "left" }}
+                        >
+                            Fullness: {equipmentStatusResponse.fullness} %
+                        </Typography>
+                        <Typography
+                            variant="body2"
+                            sx={{ fontSize: "1.5rem", textAlign: "left" }}
+                        >
+                            Last Update: {equipmentStatusResponse.lastUpdate}
+                        </Typography>
+                    </Box>,
+                );
             }
         } catch (error) {
             console.error("Error checking equipment status:", error);
@@ -174,12 +182,13 @@ const MyEquipmentPage: React.FC = () => {
     };
 
     const handleConnectionStringChange = async () => {
-        const response = updateConnectionString(id!, connectionString);
-        response.catch((error: any) => {
+        try {
+            await updateConnectionString(id!, connectionString);
+        } catch (error: any) {
             if (error.response) {
                 toast.error(error.response.data.message);
             }
-        });
+        }
     };
 
     const handleRecipeSelect = (recipe: RecipeDto) => {
@@ -192,12 +201,13 @@ const MyEquipmentPage: React.FC = () => {
 
     const handleStartBrewing = async () => {
         if (!selectedRecipe) return;
-        const response = startNewBrewing(selectedRecipe.id, id!);
-        response.catch((error: any) => {
+        try {
+            await startNewBrewing(selectedRecipe.id, id!);
+        } catch (error: any) {
             if (error.response) {
                 toast.error(error.response.data.message);
             }
-        });
+        }
     };
 
     if (!equipment) {
@@ -208,7 +218,7 @@ const MyEquipmentPage: React.FC = () => {
         <Container>
             <Paper sx={{ padding: 4, marginTop: 4 }}>
                 <Typography variant="h2" gutterBottom>
-                    {equipment.name}
+                   ( {equipment.id.split("-")[0]}) {equipment.name} {isBrewing ? "🟢" : "🔴"}
                 </Typography>
                 <Box
                     sx={{
@@ -219,7 +229,7 @@ const MyEquipmentPage: React.FC = () => {
                     }}
                 >
                     <Box sx={{ flex: 1, marginRight: 2 }}>
-                        <Typography variant="h5" gutterBottom>
+                        <Typography variant="h3" gutterBottom>
                             Connection String
                         </Typography>
                         <TextField
@@ -240,37 +250,47 @@ const MyEquipmentPage: React.FC = () => {
                             Update Connection String
                         </Button>
                     </Box>
-                    <Box
-                        sx={{
-                            flex: 1,
-                            backgroundColor: "#000",
-                            color: "#fff",
-                            padding: 2,
-                            height: "300px",
-                            overflowY: "scroll",
-                        }}
-                    >
-                        <Typography variant="h5" gutterBottom>
-                            Brewing Logs
-                        </Typography>
-                        <Box sx={{ fontSize: "1.5rem" }}>{logs}</Box>
+                    <Box sx={{ flex: 1 }}>
+                        <Box
+                            sx={{
+                                backgroundColor: "#000",
+                                color: "#fff",
+                                padding: 2,
+                                height: "150px",
+                                overflowY: "scroll",
+                                marginBottom: 2,
+                            }}
+                        >
+                            <Typography variant="h5" gutterBottom>
+                                Current Brewing Status
+                            </Typography>
+                            <Box sx={{ fontSize: "1.5rem", textAlign: "left" }}>
+                                {brewingLogs}
+                            </Box>
+                        </Box>
+                        <Box
+                            sx={{
+                                backgroundColor: "#000",
+                                color: "#fff",
+                                padding: 2,
+                                height: "150px",
+                                overflowY: "scroll",
+                            }}
+                        >
+                            <Typography variant="h5" gutterBottom>
+                                Equipment Status
+                            </Typography>
+                            <Box sx={{ fontSize: "1.5rem", textAlign: "left" }}>
+                                {equipmentLogs}
+                            </Box>
+                        </Box>
                     </Box>
                 </Box>
                 <Box sx={{ marginTop: 4 }}>
-                    <Typography variant="h5" gutterBottom>
-                        Brewing Status
+                    <Typography variant="h3" gutterBottom>
+                        Choose a recipe to brew
                     </Typography>
-                    <Typography variant="body1" sx={{ fontSize: "1.5rem" }}>
-                        {equipment.isBrewing
-                            ? "Brewing in progress"
-                            : "Not brewing"}
-                    </Typography>
-                </Box>
-                <Box sx={{ marginTop: 4 }}>
-                    <Typography variant="h5" gutterBottom>
-                        Start Brewing
-                    </Typography>
-                    <List subheader={<ListSubheader>Recipes</ListSubheader>}>
+                    <List>
                         {recipes.map((recipe) => (
                             <ListItem
                                 button
@@ -281,7 +301,7 @@ const MyEquipmentPage: React.FC = () => {
                                 <ListItemText
                                     primary={recipe.title}
                                     primaryTypographyProps={{
-                                        style: { fontSize: "1.5rem" },
+                                        style: { fontSize: "2.5rem" },
                                     }}
                                 />
                             </ListItem>
@@ -290,8 +310,8 @@ const MyEquipmentPage: React.FC = () => {
                     {selectedRecipe && (
                         <Box sx={{ textAlign: "center", marginTop: 2 }}>
                             <Typography
-                                variant="h6"
-                                sx={{ fontSize: "1.5rem" }}
+                                variant="h4"
+                                sx={{ fontSize: "2.5rem" }}
                             >
                                 {selectedRecipe.title}
                             </Typography>
@@ -301,7 +321,7 @@ const MyEquipmentPage: React.FC = () => {
                                         <Typography
                                             key={ingredient.id}
                                             variant="body1"
-                                            sx={{ fontSize: "1.2rem" }}
+                                            sx={{ fontSize: "2rem" }}
                                         >
                                             {ingredient.name} -{" "}
                                             {ingredient.weight}g

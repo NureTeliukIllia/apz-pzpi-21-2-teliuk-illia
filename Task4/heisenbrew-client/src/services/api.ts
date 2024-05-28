@@ -179,3 +179,24 @@ export const startNewBrewing = async (
 
     return data;
 };
+
+export const abortBrewing = async (equipmentId: string) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.get(`${url}Brewing/abort/${equipmentId}`, {
+        headers: { Authorization: `Bearer ${bearer}` },
+    });
+
+    return data;
+};
+
+export const getBrewingHistory = async (equipmentId: string) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.get(
+        `${url}Brewing/equipment-brewings/${equipmentId}`,
+        {
+            headers: { Authorization: `Bearer ${bearer}` },
+        },
+    );
+
+    return data;
+};
