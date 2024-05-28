@@ -7,16 +7,23 @@ import {
     Box,
     TextField,
     Button,
-    Select,
-    MenuItem,
     List,
     ListItem,
     ListItemText,
     ListSubheader,
 } from "@mui/material";
 import axios from "axios";
-import { getItemsList, getOwnEquipmentInfo } from "../../services/api";
+import {
+    getItemsList,
+    getOwnEquipmentInfo,
+    getCurrentBrewingStatus,
+    getEquipmentStatus,
+    getEquipmentAvailability,
+    updateConnectionString,
+    startNewBrewing,
+} from "../../services/api";
 import { RecipeDto } from "./RecipeDetails";
+import { toast } from "react-toastify";
 
 interface BrewerBrewingEquipmentFullInfoDto {
     id: string;
@@ -26,57 +33,153 @@ interface BrewerBrewingEquipmentFullInfoDto {
     isBrewing: boolean;
 }
 
+interface EquipmentStatusDto {
+    temperature: number;
+    pressure: number;
+    humidity: number;
+    fullness: number;
+    lastUpdate: string;
+    isBrewing: boolean;
+}
+
+interface BrewingFullInfoDto {
+    id: string;
+    recipeId: string;
+    equipmentTitle: string;
+    recipeTitle: string;
+    brewingStatus: string;
+    lastUpdateDate: string;
+    brewingLogs: BrewingLogDto[];
+    createdAt: string;
+}
+
+interface BrewingLogDto {
+    statusCode: string;
+    message: string;
+    logTime: string;
+}
 
 const MyEquipmentPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [equipment, setEquipment] =
         useState<BrewerBrewingEquipmentFullInfoDto | null>(null);
-    const [connectionString, setConnectionString] = useState(
-        "",
-    );
+    const [connectionString, setConnectionString] = useState("");
+    const [isAvailable, setIsAvailable] = useState(false);
+    const [logs, setLogs] = useState<string | JSX.Element>("");
     const [recipes, setRecipes] = useState<RecipeDto[]>([]);
     const [selectedRecipe, setSelectedRecipe] = useState<RecipeDto | null>(
         null,
     );
 
     useEffect(() => {
-        const fetchEquipment = async () => {
+        const fetchInitialData = async () => {
             try {
-                const response = await getOwnEquipmentInfo(id!);
-                console.log("Response: ", response);
-                setEquipment(response);
-                setConnectionString(
-                    response.connectionString
-                        ? response.connectionString
-                        : "",
-                );
+                const equipmentResponse = await getOwnEquipmentInfo(id!);
+                setEquipment(equipmentResponse);
+                setConnectionString(equipmentResponse.connectionString || "");
+
+                const recipesResponse = await getItemsList("Recipe");
+                setRecipes(recipesResponse.data);
+
+                checkEquipmentStatus();
+                const intervalId = setInterval(checkEquipmentStatus, 3000);
+
+                return () => clearInterval(intervalId);
             } catch (error) {
-                console.error("Error fetching equipment:", error);
+                console.error("Error fetching initial data:", error);
             }
         };
 
-        const fetchRecipes = async () => {
-            try {
-                const response = await getItemsList("Recipe");
-                setRecipes(response.data);
-            } catch (error) {
-                console.error("Error fetching recipes:", error);
-            }
-        };
-
-        fetchEquipment();
-        fetchRecipes();
+        fetchInitialData();
     }, [id]);
 
-    const handleConnectionStringChange = async () => {
+    const checkEquipmentStatus = async () => {
         try {
-            await axios.put(`/api/equipment/${id}/connection-string`, {
-                connectionString,
-            });
-            // Optionally, update the equipment data if needed
+            const availabilityResponse = (await getEquipmentAvailability(
+                id!,
+            )) as unknown as boolean;
+            setIsAvailable(availabilityResponse);
+
+            if (!availabilityResponse) {
+                setLogs(
+                    "The device is not available, check your connection string!",
+                );
+            } else {
+                const equipmentStatusResponse = (await getEquipmentStatus(
+                    id!,
+                )) as unknown as EquipmentStatusDto;
+                if (equipmentStatusResponse.isBrewing) {
+                    const brewingStatusResponse =
+                        (await getCurrentBrewingStatus(
+                            id!,
+                        )) as unknown as BrewingFullInfoDto;
+                    setLogs(
+                        <Box>
+                            {brewingStatusResponse.brewingLogs.map(
+                                (log, index) => (
+                                    <Typography
+                                        key={index}
+                                        variant="body2"
+                                        sx={{ fontSize: "1.5rem" }}
+                                    >
+                                        [{log.logTime}] {log.statusCode}:{" "}
+                                        {log.message}
+                                    </Typography>
+                                ),
+                            )}
+                        </Box>,
+                    );
+                } else {
+                    setLogs(
+                        <Box>
+                            <Typography
+                                variant="body2"
+                                sx={{ fontSize: "1.5rem" }}
+                            >
+                                Temperature:{" "}
+                                {equipmentStatusResponse.temperature}°C
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                sx={{ fontSize: "1.5rem" }}
+                            >
+                                Pressure: {equipmentStatusResponse.pressure} Pa
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                sx={{ fontSize: "1.5rem" }}
+                            >
+                                Humidity: {equipmentStatusResponse.humidity} %
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                sx={{ fontSize: "1.5rem" }}
+                            >
+                                Fullness: {equipmentStatusResponse.fullness} %
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                sx={{ fontSize: "1.5rem" }}
+                            >
+                                Last Update:{" "}
+                                {equipmentStatusResponse.lastUpdate}
+                            </Typography>
+                        </Box>,
+                    );
+                }
+            }
         } catch (error) {
-            console.error("Error updating connection string:", error);
+            console.error("Error checking equipment status:", error);
         }
+    };
+
+    const handleConnectionStringChange = async () => {
+        const response = updateConnectionString(id!, connectionString);
+        response.catch((error: any) => {
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
+        });
     };
 
     const handleRecipeSelect = (recipe: RecipeDto) => {
@@ -89,18 +192,16 @@ const MyEquipmentPage: React.FC = () => {
 
     const handleStartBrewing = async () => {
         if (!selectedRecipe) return;
-        try {
-            await axios.post(`/api/equipment/${id}/start-brewing`, {
-                recipeId: selectedRecipe.id,
-            });
-            // Optionally, update the equipment data if needed
-        } catch (error) {
-            console.error("Error starting brewing:", error);
-        }
+        const response = startNewBrewing(selectedRecipe.id, id!);
+        response.catch((error: any) => {
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
+        });
     };
 
     if (!equipment) {
-        return <Typography>Loading...</Typography>;
+        return <Typography variant="h4">Loading...</Typography>;
     }
 
     return (
@@ -146,15 +247,13 @@ const MyEquipmentPage: React.FC = () => {
                             color: "#fff",
                             padding: 2,
                             height: "300px",
+                            overflowY: "scroll",
                         }}
                     >
                         <Typography variant="h5" gutterBottom>
                             Brewing Logs
                         </Typography>
-                        {/* Replace with actual logs */}
-                        <pre style={{ fontSize: "1.5rem" }}>
-                            Log data here...
-                        </pre>
+                        <Box sx={{ fontSize: "1.5rem" }}>{logs}</Box>
                     </Box>
                 </Box>
                 <Box sx={{ marginTop: 4 }}>

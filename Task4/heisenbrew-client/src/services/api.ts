@@ -16,6 +16,16 @@ interface UpdateBrewerProfileDto {
     lastName: string;
 }
 
+interface UpdateConnectionStringDto {
+    equipmentId: string;
+    connectionString: string;
+}
+
+interface StartBrewingDto {
+    recipeId: string;
+    equipmentId: string;
+}
+
 export const getItemsList = async (type: string) =>
     await axios.get(`https://localhost:7084/api/${type}`);
 
@@ -96,10 +106,30 @@ export const updateProfile = async (
     return data;
 };
 
+export const updateConnectionString = async (
+    equipmentId: string,
+    newConnectionString: string,
+) => {
+    const bearer = localStorage.getItem("bearer");
+    const request: UpdateConnectionStringDto = {
+        equipmentId: equipmentId,
+        connectionString: newConnectionString,
+    };
+    const { data } = await axios.put(
+        `${url}Brewing/my-equipment/update-string`,
+        request,
+        {
+            headers: { Authorization: `Bearer ${bearer}` },
+        },
+    );
+
+    return data;
+};
+
 export const getCurrentBrewingStatus = async (equipmentId: string) => {
     const bearer = localStorage.getItem("bearer");
 
-    const { data } = await axios.get<UpdateBrewerProfileDto>(
+    const { data } = await axios.get(
         `${url}Brewing/brewing-status/${equipmentId}`,
         {
             headers: { Authorization: `Bearer ${bearer}` },
@@ -112,7 +142,7 @@ export const getCurrentBrewingStatus = async (equipmentId: string) => {
 export const getEquipmentStatus = async (equipmentId: string) => {
     const bearer = localStorage.getItem("bearer");
 
-    const { data } = await axios.get<UpdateBrewerProfileDto>(
+    const { data } = await axios.get(
         `${url}Brewing/equipment-status/${equipmentId}`,
         {
             headers: { Authorization: `Bearer ${bearer}` },
@@ -125,8 +155,23 @@ export const getEquipmentStatus = async (equipmentId: string) => {
 export const getEquipmentAvailability = async (equipmentId: string) => {
     const bearer = localStorage.getItem("bearer");
 
-    const { data } = await axios.get<UpdateBrewerProfileDto>(
+    const { data } = await axios.get(
         `${url}Brewing/equipment-availability/${equipmentId}`,
+        {
+            headers: { Authorization: `Bearer ${bearer}` },
+        },
+    );
+
+    return data;
+};
+
+export const startNewBrewing = async (
+    recipeId: string,
+    equipmentId: string,
+) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.get(
+        `${url}Brewing/start?recipeId=${recipeId}&equipmentId=${equipmentId}`,
         {
             headers: { Authorization: `Bearer ${bearer}` },
         },
