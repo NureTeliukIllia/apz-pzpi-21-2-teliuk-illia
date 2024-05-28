@@ -12,7 +12,6 @@ import {
     ListItemText,
     ListSubheader,
 } from "@mui/material";
-import axios from "axios";
 import {
     getItemsList,
     getOwnEquipmentInfo,
@@ -21,9 +20,18 @@ import {
     getEquipmentAvailability,
     updateConnectionString,
     startNewBrewing,
+    abortBrewing,
+    getBrewingHistory,
 } from "../../services/api";
 import { RecipeDto } from "./RecipeDetails";
 import { toast } from "react-toastify";
+
+interface BrewingShortInfoDto {
+    equipmentTitle: string;
+    recipeTitle: string;
+    brewingStatus: string;
+    lastUpdateDate: string;
+}
 
 interface BrewerBrewingEquipmentFullInfoDto {
     id: string;
@@ -70,6 +78,9 @@ const MyEquipmentPage: React.FC = () => {
     const [equipmentLogs, setEquipmentLogs] = useState<string | JSX.Element>(
         "",
     );
+    const [brewingHistory, setBrewingHistory] = useState<string | JSX.Element>(
+        "",
+    );
     const [recipes, setRecipes] = useState<RecipeDto[]>([]);
     const [selectedRecipe, setSelectedRecipe] = useState<RecipeDto | null>(
         null,
@@ -86,7 +97,11 @@ const MyEquipmentPage: React.FC = () => {
                 setRecipes(recipesResponse.data);
 
                 checkEquipmentStatus();
-                const intervalId = setInterval(checkEquipmentStatus, 3000);
+                fetchBrewingHistory();
+                const intervalId = setInterval(() => {
+                    checkEquipmentStatus();
+                    fetchBrewingHistory();
+                }, 3000);
 
                 return () => clearInterval(intervalId);
             } catch (error) {
@@ -181,6 +196,57 @@ const MyEquipmentPage: React.FC = () => {
         }
     };
 
+    const fetchBrewingHistory = async () => {
+        try {
+            const historyResponse = await getBrewingHistory(id!);
+            setBrewingHistory(
+                <Box
+                    sx={{
+                        backgroundColor: "#000",
+                        color: "#fff",
+                        padding: 2,
+                        height: "300px",
+                        overflowY: "scroll",
+                    }}
+                >
+                    {historyResponse.map(
+                        (historyItem: BrewingShortInfoDto, index: number) => (
+                            <div key={index}>
+                                <Typography
+                                    variant="body1"
+                                    sx={{ fontSize: "1.5rem" }}
+                                >
+                                    Equipment: {historyItem.equipmentTitle}
+                                </Typography>
+                                <Typography
+                                    variant="body1"
+                                    sx={{ fontSize: "1.5rem" }}
+                                >
+                                    Recipe: {historyItem.recipeTitle}
+                                </Typography>
+                                <Typography
+                                    variant="body1"
+                                    sx={{ fontSize: "1.5rem" }}
+                                >
+                                    Status: {historyItem.brewingStatus}
+                                </Typography>
+                                <Typography
+                                    variant="body1"
+                                    sx={{ fontSize: "1.5rem" }}
+                                >
+                                    Last Update: {historyItem.lastUpdateDate}
+                                </Typography>
+                                <hr />{" "}
+                            </div>
+                        ),
+                    )}
+                </Box>,
+            );
+        } catch (error) {
+            console.error("Error fetching brewing history:", error);
+        }
+    };
+
     const handleConnectionStringChange = async () => {
         try {
             await updateConnectionString(id!, connectionString);
@@ -210,6 +276,16 @@ const MyEquipmentPage: React.FC = () => {
         }
     };
 
+    const handleAbortBrewing = async () => {
+        try {
+            await abortBrewing(id!);
+        } catch (error: any) {
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
+        }
+    };
+
     if (!equipment) {
         return <Typography variant="h4">Loading...</Typography>;
     }
@@ -218,7 +294,8 @@ const MyEquipmentPage: React.FC = () => {
         <Container>
             <Paper sx={{ padding: 4, marginTop: 4 }}>
                 <Typography variant="h2" gutterBottom>
-                   ( {equipment.id.split("-")[0]}) {equipment.name} {isBrewing ? "🟢" : "🔴"}
+                    ({equipment.id.split("-")[0]}) {equipment.name}{" "}
+                    {isBrewing ? "🟢" : "🔴"}
                 </Typography>
                 <Box
                     sx={{
@@ -286,60 +363,98 @@ const MyEquipmentPage: React.FC = () => {
                         </Box>
                     </Box>
                 </Box>
-                <Box sx={{ marginTop: 4 }}>
-                    <Typography variant="h3" gutterBottom>
-                        Choose a recipe to brew
-                    </Typography>
-                    <List>
-                        {recipes.map((recipe) => (
-                            <ListItem
-                                button
-                                key={recipe.id}
-                                onClick={() => handleRecipeSelect(recipe)}
-                                selected={selectedRecipe?.id === recipe.id}
-                            >
-                                <ListItemText
-                                    primary={recipe.title}
-                                    primaryTypographyProps={{
-                                        style: { fontSize: "2.5rem" },
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginTop: 4,
+                    }}
+                >
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="h3" gutterBottom>
+                            Choose a recipe to brew
+                        </Typography>
+                        <List>
+                            {recipes.map((recipe) => (
+                                <ListItem
+                                    button
+                                    key={recipe.id}
+                                    onClick={() => handleRecipeSelect(recipe)}
+                                    selected={selectedRecipe?.id === recipe.id}
+                                >
+                                    <ListItemText
+                                        primary={recipe.title}
+                                        primaryTypographyProps={{
+                                            style: { fontSize: "2.5rem" },
+                                        }}
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                        {selectedRecipe && (
+                            <Box sx={{ textAlign: "center", marginTop: 2 }}>
+                                <Typography
+                                    variant="h4"
+                                    sx={{ fontSize: "2.5rem" }}
+                                >
+                                    {selectedRecipe.title}
+                                </Typography>
+                                <Box>
+                                    {selectedRecipe.ingredients.map(
+                                        (ingredient) => (
+                                            <Typography
+                                                key={ingredient.id}
+                                                variant="body1"
+                                                sx={{ fontSize: "2rem" }}
+                                            >
+                                                {ingredient.name} -{" "}
+                                                {ingredient.weight}g
+                                            </Typography>
+                                        ),
+                                    )}
+                                </Box>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleStartBrewing}
+                                    disabled={isBrewing}
+                                    sx={{ marginTop: 2, fontSize: "1.5rem" }}
+                                >
+                                    Start Brewing
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={handleAbortBrewing}
+                                    disabled={!isBrewing}
+                                    sx={{
+                                        marginTop: 2,
+                                        fontSize: "1.5rem",
+                                        marginLeft: 2,
                                     }}
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
-                    {selectedRecipe && (
-                        <Box sx={{ textAlign: "center", marginTop: 2 }}>
-                            <Typography
-                                variant="h4"
-                                sx={{ fontSize: "2.5rem" }}
-                            >
-                                {selectedRecipe.title}
-                            </Typography>
-                            <Box>
-                                {selectedRecipe.ingredients.map(
-                                    (ingredient) => (
-                                        <Typography
-                                            key={ingredient.id}
-                                            variant="body1"
-                                            sx={{ fontSize: "2rem" }}
-                                        >
-                                            {ingredient.name} -{" "}
-                                            {ingredient.weight}g
-                                        </Typography>
-                                    ),
-                                )}
+                                >
+                                    Abort
+                                </Button>
                             </Box>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleStartBrewing}
-                                disabled={equipment.isBrewing}
-                                sx={{ marginTop: 2, fontSize: "1.5rem" }}
-                            >
-                                Start Brewing
-                            </Button>
+                        )}
+                    </Box>
+                    <Box sx={{ flex: 1, marginLeft: 2 }}>
+                        <Typography variant="h3" gutterBottom>
+                            Brewing History
+                        </Typography>
+                        <Box
+                            sx={{
+                                backgroundColor: "#000",
+                                color: "#fff",
+                                padding: 2,
+                                height: "300px",
+                                overflowY: "scroll",
+                                textAlign: "left",
+                            }}
+                        >
+                            {brewingHistory}
                         </Box>
-                    )}
+                    </Box>
                 </Box>
             </Paper>
         </Container>
