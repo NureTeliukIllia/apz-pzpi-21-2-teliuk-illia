@@ -83,34 +83,6 @@ const DataSwitcher: React.FC = () => {
 
     return (
         <Container>
-            <ButtonGroup
-                variant="contained"
-                style={{ marginBottom: "2rem" }}
-                size="large"
-            >
-                <Button
-                    color={dataType === "Recipe" ? "primary" : "secondary"}
-                    style={{ fontSize: "2rem" }}
-                    onClick={() => setDataType("Recipe")}
-                >
-                    Recipes
-                </Button>
-                <Button
-                    color={dataType === "Equipment" ? "primary" : "secondary"}
-                    style={{ fontSize: "2rem" }}
-                    onClick={() => setDataType("Equipment")}
-                >
-                    Equipment
-                </Button>
-                <Button
-                    color={dataType === "Ingredient" ? "primary" : "secondary"}
-                    style={{ fontSize: "2rem" }}
-                    onClick={() => setDataType("Ingredient")}
-                >
-                    Ingredients
-                </Button>
-            </ButtonGroup>
-
             {userRole === "Administrator" && (
                 <ButtonGroup
                     variant="contained"
@@ -139,16 +111,44 @@ const DataSwitcher: React.FC = () => {
                     >
                         Add Ingredient
                     </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ marginLeft: "2rem", fontSize: "2rem" }}
+                        onClick={handleDownloadData}
+                    >
+                        Download Data
+                    </Button>
                 </ButtonGroup>
             )}
-            <Button
+
+            <ButtonGroup
                 variant="contained"
-                color="primary"
-                sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-                onClick={handleDownloadData}
+                style={{ marginBottom: "2rem" }}
+                size="large"
             >
-                Download Data
-            </Button>
+                <Button
+                    color={dataType === "Recipe" ? "primary" : "secondary"}
+                    style={{ fontSize: "2rem" }}
+                    onClick={() => setDataType("Recipe")}
+                >
+                    Recipes
+                </Button>
+                <Button
+                    color={dataType === "Equipment" ? "primary" : "secondary"}
+                    style={{ fontSize: "2rem" }}
+                    onClick={() => setDataType("Equipment")}
+                >
+                    Equipment
+                </Button>
+                <Button
+                    color={dataType === "Ingredient" ? "primary" : "secondary"}
+                    style={{ fontSize: "2rem" }}
+                    onClick={() => setDataType("Ingredient")}
+                >
+                    Ingredients
+                </Button>
+            </ButtonGroup>
 
             {dataType === "Recipe" && (
                 <HomeRecipes data={data} onDataChange={handleDataChange} />

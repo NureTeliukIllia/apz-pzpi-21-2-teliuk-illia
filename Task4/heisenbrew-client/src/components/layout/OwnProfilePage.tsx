@@ -97,7 +97,7 @@ const ProfilePage: React.FC = () => {
                     Profile:{" "}
                     {profile.fullName !== " "
                         ? profile.fullName
-                        : "Set your name in settings"}
+                        : "Set your name!"}
                 </Typography>
                 <Button
                     variant="outlined"
