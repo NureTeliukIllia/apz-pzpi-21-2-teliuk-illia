@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Core;
 using Core.Models;
+using Core.Models.Ingredient;
 using DAL;
 using Infrustructure.Dto.Ingredient;
 using Infrustructure.Dto.Recipe;
@@ -193,8 +194,16 @@ namespace BLL.RecipeManagement
                     return RecipeServiceErrors.NotYourRecipeError;
                 }
 
+                var ingredients = _mapper.Map<List<RecipeIngredient>>(updateRecipeDto.Ingredients.Select(i => new RecipeIngredient
+                {
+                    RecipeId = recipe.Id,
+                    IngredientId = i.Id,
+                    Weight = i.Weight
+                }));
+
                 _mapper.Map(updateRecipeDto, recipe);
 
+                recipe.Ingredients = ingredients;
 
 
                 await _context.SaveChangesAsync();

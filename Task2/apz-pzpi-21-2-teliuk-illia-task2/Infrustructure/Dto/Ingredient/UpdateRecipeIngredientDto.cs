@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Infrustructure.Dto.Ingredient
 {
-    public record CreateRecipeIngredientDto
+    public record UpdateRecipeIngredientDto
     (
-      Guid Id,
-      double Weight
+        Guid Id,
+        double Weight
     );
 }

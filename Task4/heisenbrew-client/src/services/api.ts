@@ -38,17 +38,28 @@ interface UpdateRecipeDto {
     id: string;
     title: string;
     description: string;
-    ingredients: RecipeIngredientDto[];
+    ingredients: CreateRecipeIngredientDto[];
 }
 
 interface CreateRecipeDto {
     title: string;
     description: string;
-    ingredients: RecipeIngredientDto[];
+    ingredients: CreateRecipeIngredientDto[];
 }
 
-interface RecipeIngredientDto {
-    ingredientId: string;
+interface CreateRecipeIngredientDto {
+    id: string;
+    weight: number;
+}
+
+interface CreateIngredientDto {
+    name: string;
+    weight: number;
+}
+
+interface UpdateIngredientDto {
+    id: string;
+    name: string;
     weight: number;
 }
 
@@ -271,7 +282,7 @@ export const createEquipment = async (newEquipment: CreateEquipmentDto) => {
 
 export const deleteRecipe = async (recipeId: string) => {
     const bearer = localStorage.getItem("bearer");
-    const { data } = await axios.delete(`${url}Recipe/delete/${recipeId}`, {
+    const { data } = await axios.delete(`${url}Recipe/${recipeId}`, {
         headers: { Authorization: `Bearer ${bearer}` },
     });
 
@@ -280,7 +291,7 @@ export const deleteRecipe = async (recipeId: string) => {
 
 export const updateRecipe = async (newRecipe: UpdateRecipeDto) => {
     const bearer = localStorage.getItem("bearer");
-    const { data } = await axios.put(`${url}Recipe/update`, newRecipe, {
+    const { data } = await axios.put(`${url}Recipe/edit`, newRecipe, {
         headers: { Authorization: `Bearer ${bearer}` },
     });
 
@@ -292,6 +303,37 @@ export const createRecipe = async (newRecipe: CreateRecipeDto) => {
     const { data } = await axios.post(`${url}Recipe/create`, newRecipe, {
         headers: { Authorization: `Bearer ${bearer}` },
     });
+
+    return data;
+};
+
+export const deleteIngredient = async (ingredientId: string) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.delete(`${url}Ingredient/${ingredientId}`, {
+        headers: { Authorization: `Bearer ${bearer}` },
+    });
+
+    return data;
+};
+
+export const updateIngredient = async (newIngredient: UpdateIngredientDto) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.put(`${url}Ingredient/edit`, newIngredient, {
+        headers: { Authorization: `Bearer ${bearer}` },
+    });
+
+    return data;
+};
+
+export const createIngredient = async (newIngredient: CreateIngredientDto) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.post(
+        `${url}Ingredient/create`,
+        newIngredient,
+        {
+            headers: { Authorization: `Bearer ${bearer}` },
+        },
+    );
 
     return data;
 };

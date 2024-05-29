@@ -1,6 +1,5 @@
 // DataSwitcher.tsx
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Button, ButtonGroup, Container } from "@mui/material";
 import HomeRecipes from "../MainTables/HomeRecipes";
 import HomeBrewingEquipment from "../MainTables/HomeBrewingEquipment";
@@ -55,7 +54,7 @@ const DataSwitcher: React.FC = () => {
                     Ingredients
                 </Button>
             </ButtonGroup>
-            {dataType === "Recipe" && <HomeRecipes data={data} />}
+            {dataType === "Recipe" && <HomeRecipes data={data} onDataChange={handleDataChange} />}
             {dataType === "Equipment" && <HomeBrewingEquipment data={data} onDataChange={handleDataChange} />}
             {dataType === "Ingredient" && <HomeIngredients data={data} />}
         </Container>
