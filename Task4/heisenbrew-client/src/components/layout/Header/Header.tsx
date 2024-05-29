@@ -23,14 +23,11 @@ export const Header: FC<IHeaderProps> = (props: IHeaderProps) => {
                 <div className={styles["logo__container"]}>
                     <img src={logo} alt="logo" />
                 </div>
-                <div className={styles["current-page"]}>
-                    <h1>{props.currentPage}</h1>
-                </div>
+
                 <nav className={styles["nav"]}>
                     <Link
                         className={styles["nav-link"]}
                         to="/"
-                        onClick={() => props.setCurrentPage("Home")}
                     >
                         Home
                     </Link>
@@ -39,9 +36,7 @@ export const Header: FC<IHeaderProps> = (props: IHeaderProps) => {
                         to={props.isLogged ? "/me" : "/login"}
                         onClick={() => {
                             if (props.isLogged) {
-                                props.setCurrentPage("My Profile");
                             } else {
-                                props.setCurrentPage("Login");
                                 toast.warn("You need to login first.");
                             }
                         }}
@@ -64,18 +59,13 @@ export const Header: FC<IHeaderProps> = (props: IHeaderProps) => {
                             <Link to="/login">
                                 <Button
                                     title={"Login"}
-                                    handleClick={() =>
-                                        props.setCurrentPage("Login")
-                                    }
+
                                 >
                                     <h1>Login</h1>
                                 </Button>
                             </Link>
                             <Link to="register">
                                 <Button
-                                    handleClick={() =>
-                                        props.setCurrentPage("Sign Up")
-                                    }
                                     customStyles={styles["sign-up"]}
                                     title={"Sign Up"}
                                 >

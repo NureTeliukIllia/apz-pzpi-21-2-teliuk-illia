@@ -4,35 +4,15 @@ import { ButtonType } from "./types";
 export interface IHeaderProps {
     isLogged: boolean;
     setIsLogged: (isLogged: boolean) => void;
-    currentPage: string;
-    setCurrentPage: (currentPage: string) => void
 }
 
 export interface IPageProps {
-    isLogged: boolean;
-    setCurrentPage: (currentPage: string) => void;
 }
 
 export interface IAuthProps {
     setIsLogged: (isLogged: boolean) => void;
-    currentPage: string;
-    setCurrentPage: (currentPage: string) => void;
 }
 
-export interface IAlbumProps {
-    id: string;
-    title: string;
-    imgUrl: string;
-    author: string;
-    authorId: string;
-    canBeManaged: boolean;
-    onChange: (isDeleted: boolean) => void;
-}
-
-export interface IAlbumListProps {
-    shouldRefill: boolean;
-    albumsType: "all-albums" | "my-albums";
-}
 
 export interface IButtonProps {
     children: ReactNode;
@@ -77,20 +57,4 @@ export interface IUploadDialog {
     onChangeValue: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export interface IPictureProps {
-    id: string;
-    authorId: string;
-    imgUrl: string;
-    upVotesCount: number;
-    downVotesCount: number;
-    usersVote: "UNVOTED" | "UPVOTED" | "DOWNVOTED";
-    onChange: (isDeleted: boolean) => void;
-    canBeManaged: boolean;
-}
 
-export interface IVoteProps {
-    isVoted: boolean;
-    isPositive: boolean;
-    votesCount: number;
-    handleClick: (vote: string) => void;
-}

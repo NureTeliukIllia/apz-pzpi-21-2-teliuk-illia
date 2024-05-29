@@ -267,13 +267,13 @@ const MyEquipmentPage: React.FC = () => {
 
     const handleStartBrewing = async () => {
         if (!selectedRecipe) return;
-        try {
-            await startNewBrewing(selectedRecipe.id, id!);
-        } catch (error: any) {
+
+        const response = startNewBrewing(selectedRecipe.id, id!);
+        response.catch((error: any) => {
             if (error.response) {
                 toast.error(error.response.data.message);
             }
-        }
+        });
     };
 
     const handleAbortBrewing = async () => {
@@ -438,7 +438,7 @@ const MyEquipmentPage: React.FC = () => {
                             </Box>
                         )}
                     </Box>
-                    <Box sx={{ flex: 1, marginLeft: 2 }}>
+                    <Box sx={{ flex: 1, marginLeft: 2, overflowY: "hidden" }}>
                         <Typography variant="h3" gutterBottom>
                             Brewing History
                         </Typography>
@@ -446,9 +446,8 @@ const MyEquipmentPage: React.FC = () => {
                             sx={{
                                 backgroundColor: "#000",
                                 color: "#fff",
-                                padding: 2,
+                                padding: 0,
                                 height: "300px",
-                                overflowY: "scroll",
                                 textAlign: "left",
                             }}
                         >

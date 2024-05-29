@@ -21,9 +21,35 @@ interface UpdateConnectionStringDto {
     connectionString: string;
 }
 
-interface StartBrewingDto {
-    recipeId: string;
-    equipmentId: string;
+interface UpdateEquipmentDto {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+}
+
+interface CreateEquipmentDto {
+    name: string;
+    description: string;
+    price: number;
+}
+
+interface UpdateRecipeDto {
+    id: string;
+    title: string;
+    description: string;
+    ingredients: RecipeIngredientDto[];
+}
+
+interface CreateRecipeDto {
+    title: string;
+    description: string;
+    ingredients: RecipeIngredientDto[];
+}
+
+interface RecipeIngredientDto {
+    ingredientId: string;
+    weight: number;
 }
 
 export const getItemsList = async (type: string) =>
@@ -197,6 +223,75 @@ export const getBrewingHistory = async (equipmentId: string) => {
             headers: { Authorization: `Bearer ${bearer}` },
         },
     );
+
+    return data;
+};
+
+export const buyEquipment = async (equipmentId: string) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.get(
+        `${url}Equipment/my-equipment/buy/${equipmentId}`,
+        {
+            headers: { Authorization: `Bearer ${bearer}` },
+        },
+    );
+
+    return data;
+};
+
+export const deleteEquipment = async (equipmentId: string) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.delete(
+        `${url}Equipment/delete/${equipmentId}`,
+        {
+            headers: { Authorization: `Bearer ${bearer}` },
+        },
+    );
+
+    return data;
+};
+
+export const updateEquipment = async (newEquipment: UpdateEquipmentDto) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.put(`${url}Equipment/update`, newEquipment, {
+        headers: { Authorization: `Bearer ${bearer}` },
+    });
+
+    return data;
+};
+
+export const createEquipment = async (newEquipment: CreateEquipmentDto) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.post(`${url}Equipment/create`, newEquipment, {
+        headers: { Authorization: `Bearer ${bearer}` },
+    });
+
+    return data;
+};
+
+export const deleteRecipe = async (recipeId: string) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.delete(`${url}Recipe/delete/${recipeId}`, {
+        headers: { Authorization: `Bearer ${bearer}` },
+    });
+
+    return data;
+};
+
+export const updateRecipe = async (newRecipe: UpdateRecipeDto) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.put(`${url}Recipe/update`, newRecipe, {
+        headers: { Authorization: `Bearer ${bearer}` },
+    });
+
+    return data;
+};
+
+export const createRecipe = async (newRecipe: CreateRecipeDto) => {
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.post(`${url}Recipe/create`, newRecipe, {
+        headers: { Authorization: `Bearer ${bearer}` },
+    });
 
     return data;
 };

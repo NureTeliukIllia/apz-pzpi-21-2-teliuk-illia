@@ -30,7 +30,6 @@ const Register: FC<IAuthProps> = (props: IAuthProps) => {
                     localStorage.setItem("userRole", data.userRole);
                     localStorage.setItem("bearer", data.bearer);
                     props.setIsLogged(true);
-                    props.setCurrentPage("My profile");
                     navigate("/me");
                 })
                 .catch((error: any) => {
@@ -139,9 +138,7 @@ const Register: FC<IAuthProps> = (props: IAuthProps) => {
                         <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <Link
-                                    onClick={() =>
-                                        props.setCurrentPage("Login")
-                                    }
+
                                     to="/login"
                                     className={styles["Link"]}
                                 >

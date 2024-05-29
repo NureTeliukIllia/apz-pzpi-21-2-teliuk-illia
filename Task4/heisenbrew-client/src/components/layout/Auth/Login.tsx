@@ -29,7 +29,6 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
                 localStorage.setItem("userRole", data.userRole);
                 localStorage.setItem("bearer", data.bearer);
                 props.setIsLogged(true);
-                props.setCurrentPage("Home");
                 navigate("/");
             })
             .catch((error: any) => {
@@ -40,7 +39,6 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
                 }
             });
     };
-    props.setCurrentPage("Login");
 
     return (
         <>
@@ -113,9 +111,6 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
                         <Grid container justifyContent={"flex-end"}>
                             <Grid item>
                                 <Link
-                                    onClick={() =>
-                                        props.setCurrentPage("Sign Up")
-                                    }
                                     to="/register"
                                     className={styles["Link"]}
                                 >

@@ -15,17 +15,13 @@ import MyEquipmentPage from "./components/layout/EquipmentBrewingPage";
 function App() {
     const user = localStorage.getItem("userId");
     const [isLogged, setIsLogged] = useState<boolean>(user?.length! > 0);
-    const [currentPage, setCurrentPage] = useState<string>("Home");
-    const [selectedHowl, setSelectedHowl] = useState(null);
-    const [playing, setPlaying] = useState(false);
+
 
     return (
         <>
             <Header
                 isLogged={isLogged}
                 setIsLogged={setIsLogged}
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
             />
             <Routes>
                 <Route path="/" element={<Home />} />
@@ -34,8 +30,6 @@ function App() {
                     element={
                         <Login
                             setIsLogged={setIsLogged}
-                            currentPage={currentPage}
-                            setCurrentPage={setCurrentPage}
                         />
                     }
                 />
@@ -44,8 +38,6 @@ function App() {
                     element={
                         <Register
                             setIsLogged={setIsLogged}
-                            currentPage={currentPage}
-                            setCurrentPage={setCurrentPage}
                         />
                     }
                 />

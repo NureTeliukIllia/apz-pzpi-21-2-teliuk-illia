@@ -10,7 +10,7 @@ namespace Infrustructure.Dto.Equipment
     (
         Guid Id,
         string Name,
-        string ImgUrl,
+        string Description,
         decimal Price
     );
 }
