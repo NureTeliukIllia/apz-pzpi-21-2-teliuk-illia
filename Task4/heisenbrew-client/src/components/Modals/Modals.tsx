@@ -24,7 +24,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     title,
     description,
 }) => (
-    <Dialog open={open} onClose={onClose} style={{ marginTop: "10rem" }}>
+    <Dialog open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
         <DialogTitle sx={{ fontSize: "2rem" }}>{title}</DialogTitle>
         <DialogContent>
             <DialogContentText sx={{ fontSize: "1.5rem" }}>

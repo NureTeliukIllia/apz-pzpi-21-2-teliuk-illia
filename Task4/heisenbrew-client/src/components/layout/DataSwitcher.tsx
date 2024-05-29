@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Container } from "@mui/material";
 import HomeRecipes from "../MainTables/HomeRecipes";
 import HomeBrewingEquipment from "../MainTables/HomeBrewingEquipment";
 import HomeIngredients from "../MainTables/HomeIngredients";
-import { getItemsList } from "../../services/api";
+import { downloadData, getItemsList } from "../../services/api";
 import CreateRecipeModal from "../Modals/CreateRecipeModal";
 import CreateEquipmentModal from "../Modals/CreateEquipmentModal";
 import CreateIngredientModal from "../Modals/CreateIngredientModal";
@@ -40,6 +40,14 @@ const DataSwitcher: React.FC = () => {
 
     const handleDataChange = () => {
         fetchData(dataType);
+    };
+
+    const handleDownloadData = async () => {
+        try {
+            await downloadData();
+        } catch (error) {
+            console.error("Error downloading data:", error);
+        }
     };
 
     const handleCreateRecipe = async (newRecipe: any) => {
@@ -133,6 +141,14 @@ const DataSwitcher: React.FC = () => {
                     </Button>
                 </ButtonGroup>
             )}
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{ marginBottom: 2, fontSize: "1.2rem" }}
+                onClick={handleDownloadData}
+            >
+                Download Data
+            </Button>
 
             {dataType === "Recipe" && (
                 <HomeRecipes data={data} onDataChange={handleDataChange} />

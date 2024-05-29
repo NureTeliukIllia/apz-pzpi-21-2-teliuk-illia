@@ -59,8 +59,8 @@ namespace BLL.RecipeManagement
 
 
                 await _context.Recipes.AddAsync(recipe);
-                brewer.Recipes.Add(recipe);
-
+/*                brewer.Recipes.Add(recipe);
+*/
                 await _context.SaveChangesAsync();
 
                 return $"Successfully created the \"{recipe.Title}\" recipe!";

@@ -32,7 +32,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     };
 
     return (
-        <Dialog open={open} onClose={onClose} style={{ marginTop: "10rem" }}>
+        <Dialog open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
             <DialogTitle style={{ fontSize: "3rem" }}>Edit Profile</DialogTitle>
             <DialogContent>
                 <TextField

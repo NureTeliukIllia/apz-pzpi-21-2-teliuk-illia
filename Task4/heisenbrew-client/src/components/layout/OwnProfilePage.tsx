@@ -15,6 +15,7 @@ import OwnBrewingEquipment, {
 
 import OwnIngredients, { OwnIngredientsDto } from "../OwnTables/OwnIngredients";
 import OwnRecipes, { OwnRecipeDto } from "../OwnTables/OwnRecipes";
+import { RecipeDto } from "./RecipeDetails";
 
 interface BrewerProfileDto {
     id: string;
@@ -30,35 +31,39 @@ const ProfilePage: React.FC = () => {
     const [ingredients, setIngredientss] = useState<OwnIngredientsDto[] | null>(
         null,
     );
-    const [recipes, setRecipes] = useState<OwnRecipeDto[] | null>(null);
+    const [recipes, setRecipes] = useState<RecipeDto[] | null>(null);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
     const userId = localStorage.getItem("userId");
 
+    const fetchProfileData = async () => {
+        try {
+            const profileData =
+                (await getOwnProfile()) as unknown as BrewerProfileDto;
+            setProfile(profileData);
+
+            const equipmentData =
+                (await getOwnEquipment()) as unknown as OwnBrewingEquipmentDto[];
+            setEquipment(equipmentData);
+
+            const ingredientsData =
+                (await getOwnIngredients()) as unknown as OwnIngredientsDto[];
+            setIngredientss(ingredientsData);
+
+            const recipesData =
+                (await getOwnRecipes()) as unknown as RecipeDto[];
+            setRecipes(recipesData);
+        } catch (error) {
+            console.error("Error fetching profile data:", error);
+        }
+    };
+
+    const handleDataChange = () => {
+        fetchProfileData();
+    };
+
     useEffect(() => {
-        const fetchProfileData = async () => {
-            try {
-                const profileData =
-                    (await getOwnProfile()) as unknown as BrewerProfileDto;
-                setProfile(profileData);
-
-                const equipmentData =
-                    (await getOwnEquipment()) as unknown as OwnBrewingEquipmentDto[];
-                setEquipment(equipmentData);
-
-                const ingredientsData =
-                    (await getOwnIngredients()) as unknown as OwnIngredientsDto[];
-                setIngredientss(ingredientsData);
-
-                const recipesData =
-                    (await getOwnRecipes()) as unknown as OwnRecipeDto[];
-                setRecipes(recipesData);
-            } catch (error) {
-                console.error("Error fetching profile data:", error);
-            }
-        };
-
         fetchProfileData();
     }, []);
 
@@ -86,7 +91,7 @@ const ProfilePage: React.FC = () => {
     };
 
     return (
-        <Container style={{ marginTop: "10rem" }}>
+        <Container style={{ marginTop: "5rem" }}>
             <Paper sx={{ padding: 4, marginTop: 4 }}>
                 <Typography variant="h2" gutterBottom>
                     Profile:{" "}
@@ -118,7 +123,10 @@ const ProfilePage: React.FC = () => {
                     <Typography variant="h4" gutterBottom>
                         Recipes
                     </Typography>
-                    <OwnRecipes data={recipes} />
+                    <OwnRecipes
+                        data={recipes}
+                        onRecipesChange={handleDataChange}
+                    />
                 </Box>
             </Paper>
             <EditProfileModal

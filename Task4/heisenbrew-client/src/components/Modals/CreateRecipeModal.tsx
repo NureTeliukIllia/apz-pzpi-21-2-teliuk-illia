@@ -83,7 +83,7 @@ const CreateRecipeModal: React.FC<CreateRecipeModalProps> = ({
     };
 
     return (
-        <Modal open={open} onClose={onClose} style={{ marginTop: "10rem" }}>
+        <Modal open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
             <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2 }}>
                 <h2 style={{ fontSize: "2.5rem" }}>Create Recipe</h2>
                 <TextField

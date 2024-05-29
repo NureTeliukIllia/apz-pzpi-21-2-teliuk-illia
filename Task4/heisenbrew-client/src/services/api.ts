@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 const url = process.env.REACT_APP_SERVER_URL
     ? process.env.REACT_APP_SERVER_URL
     : "https://localhost:7084/api/";
@@ -349,4 +348,28 @@ export const buyIngredient = async (ingredientId: string, weight: number) => {
     );
 
     return data;
+};
+
+export const downloadData = async () => {
+    try {
+        const bearer = localStorage.getItem("bearer");
+
+        const response = await axios.get(`${url}Data/export`, {
+            headers: {
+                Authorization: `Bearer ${bearer}`,
+            },
+            responseType: "blob", // Important to handle the binary data
+        });
+
+        const downloadUrl = window.URL.createObjectURL(
+            new Blob([response.data]),
+        );
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.setAttribute("download", "DbSaved.xlsx");
+        document.body.appendChild(link);
+        link.click();
+    } catch (error) {
+        console.error("Error downloading data:", error);
+    }
 };

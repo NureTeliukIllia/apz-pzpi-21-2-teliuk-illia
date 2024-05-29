@@ -32,7 +32,7 @@ const UpdateIngredientModal: React.FC<UpdateIngredientModalProps> = ({
     };
 
     return (
-        <Modal open={open} onClose={onClose} style={{ marginTop: "10rem" }}>
+        <Modal open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
             <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2 }}>
                 <h2>Update Ingredient</h2>
                 <TextField
