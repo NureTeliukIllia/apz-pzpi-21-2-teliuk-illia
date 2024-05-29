@@ -32,7 +32,7 @@ export interface RecipeIngredientDto {
 
 interface HomeRecipesProps {
     data: RecipeDto[];
-    onDataChange: () => void; // Callback prop
+    onDataChange: () => void;
 }
 
 const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
@@ -64,7 +64,7 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
             };
             await updateRecipe({ ...updatedRecipe, id: selectedRecipe.id });
             setUpdateModalOpen(false);
-            onDataChange(); // Trigger data update
+            onDataChange();
         }
     };
 
@@ -77,7 +77,7 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
         if (selectedRecipeId) {
             await deleteRecipe(selectedRecipeId);
             setDeleteModalOpen(false);
-            onDataChange(); // Trigger data update
+            onDataChange();
         }
     };
 

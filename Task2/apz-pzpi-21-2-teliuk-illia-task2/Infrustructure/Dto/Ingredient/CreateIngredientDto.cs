@@ -9,7 +9,6 @@ namespace Infrustructure.Dto.Ingredient
     public record CreateIngredientDto
     (
         string Name,
-        decimal Price,
-        string ImgUrl
+        decimal Price
     );
 }

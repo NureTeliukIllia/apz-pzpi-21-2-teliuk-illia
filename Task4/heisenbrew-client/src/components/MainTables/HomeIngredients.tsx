@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Table,
     TableBody,
@@ -11,6 +11,10 @@ import {
     Link,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
+import BuyIngredientModal from "../Modals/BuyIngredientModal";
+import UpdateIngredientModal from "../Modals/UpdateIngredientModal";
+import { ConfirmationModal } from "../Modals/Modals";
+import { buyIngredient, deleteIngredient, updateIngredient } from "../../services/api";
 
 interface HomeIngredientsDto {
     id: string;
@@ -20,100 +24,188 @@ interface HomeIngredientsDto {
 
 interface HomeIngredientsProps {
     data: HomeIngredientsDto[];
+    onDataChange: () => void;
 }
 
-const HomeIngredients: React.FC<HomeIngredientsProps> = ({ data }) => {
+const HomeIngredients: React.FC<HomeIngredientsProps> = ({
+    data,
+    onDataChange,
+}) => {
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
 
-    const handleBuy = (id: string) => {
-        console.log(`Buy HomeIngredients with id: ${id}`);
+    const [selectedIngredient, setSelectedIngredient] =
+        useState<HomeIngredientsDto | null>(null);
+    const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+    const [isBuyModalOpen, setBuyModalOpen] = useState(false);
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [ingredientToDelete, setIngredientToDelete] = useState<string | null>(
+        null,
+    );
+
+    const handleBuy = (ingredientId: string) => {
+        setSelectedIngredient(
+            data.find((ing) => ing.id === ingredientId) || null,
+        );
+        setBuyModalOpen(true);
     };
 
-    const handleUpdate = (id: string) => {
-        console.log(`Update HomeIngredients with id: ${id}`);
+    const handleUpdate = (ingredientId: string) => {
+        setSelectedIngredient(
+            data.find((ing) => ing.id === ingredientId) || null,
+        );
+        setUpdateModalOpen(true);
     };
 
-    const handleDelete = (id: string) => {
-        console.log(`Delete HomeIngredients with id: ${id}`);
+    const handleDelete = (ingredientId: string) => {
+        setIngredientToDelete(ingredientId);
+        setDeleteModalOpen(true);
+    };
+
+    const handleUpdateIngredient = async (updatedData: {
+        name: string;
+        price: number;
+    }) => {
+        if (selectedIngredient) {
+            await updateIngredient({ ...selectedIngredient, ...updatedData });
+            setUpdateModalOpen(false);
+            onDataChange();
+        }
+    };
+
+    const handleBuyIngredient = async (buyData: {
+        ingredientId: string;
+        weight: number;
+    }) => {
+        await buyIngredient(buyData.ingredientId, buyData.weight);
+        setBuyModalOpen(false);
+        onDataChange();
+    };
+
+    const handleConfirmDelete = async () => {
+        if (ingredientToDelete) {
+            await deleteIngredient(ingredientToDelete);
+            setDeleteModalOpen(false);
+            onDataChange();
+        }
     };
 
     return (
-        <TableContainer component={Paper} sx={{ marginTop: 2 }}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell sx={{ fontSize: "2rem" }}>Name</TableCell>
-                        <TableCell sx={{ fontSize: "2rem" }}>Price</TableCell>
-                        <TableCell sx={{ fontSize: "2rem" }}>Actions</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {data.map((item) => (
-                        <TableRow key={item.id}>
+        <>
+            <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
                             <TableCell sx={{ fontSize: "2rem" }}>
-                                {item.name}
+                                Name
                             </TableCell>
                             <TableCell sx={{ fontSize: "2rem" }}>
-                                {item.price}
+                                Price
                             </TableCell>
-                            <TableCell>
-                                {isLogged ? (
-                                    <>
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            sx={{ fontSize: "2rem" }}
-                                            onClick={() => handleBuy(item.id)}
-                                        >
-                                            Buy
-                                        </Button>
-                                        {userRole === "Administrator" && (
-                                            <>
-                                                <Button
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    sx={{
-                                                        fontSize: "2rem",
-                                                        marginLeft: 1,
-                                                    }}
-                                                    onClick={() =>
-                                                        handleUpdate(item.id)
-                                                    }
-                                                >
-                                                    Update
-                                                </Button>
-                                                <Button
-                                                    variant="contained"
-                                                    color="error"
-                                                    sx={{
-                                                        fontSize: "2rem",
-                                                        marginLeft: 1,
-                                                    }}
-                                                    onClick={() =>
-                                                        handleDelete(item.id)
-                                                    }
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </>
-                                        )}
-                                    </>
-                                ) : (
-                                    <Link
-                                        component={RouterLink}
-                                        to="/login"
-                                        sx={{ fontSize: "2rem" }}
-                                    >
-                                        Login first!
-                                    </Link>
-                                )}
+                            <TableCell sx={{ fontSize: "2rem" }}>
+                                Actions
                             </TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                        {data.map((item) => (
+                            <TableRow key={item.id}>
+                                <TableCell sx={{ fontSize: "2rem" }}>
+                                    {item.name}
+                                </TableCell>
+                                <TableCell sx={{ fontSize: "2rem" }}>
+                                    {item.price}
+                                </TableCell>
+                                <TableCell>
+                                    {isLogged ? (
+                                        <>
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                sx={{ fontSize: "2rem" }}
+                                                onClick={() =>
+                                                    handleBuy(item.id)
+                                                }
+                                            >
+                                                Buy
+                                            </Button>
+                                            {userRole === "Administrator" && (
+                                                <>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        sx={{
+                                                            fontSize: "2rem",
+                                                            marginLeft: 1,
+                                                        }}
+                                                        onClick={() =>
+                                                            handleUpdate(
+                                                                item.id,
+                                                            )
+                                                        }
+                                                    >
+                                                        Update
+                                                    </Button>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="error"
+                                                        sx={{
+                                                            fontSize: "2rem",
+                                                            marginLeft: 1,
+                                                        }}
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                item.id,
+                                                            )
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <Link
+                                            component={RouterLink}
+                                            to="/login"
+                                            sx={{ fontSize: "2rem" }}
+                                        >
+                                            Login first!
+                                        </Link>
+                                    )}
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            {selectedIngredient && (
+                <UpdateIngredientModal
+                    open={isUpdateModalOpen}
+                    onClose={() => setUpdateModalOpen(false)}
+                    onUpdate={handleUpdateIngredient}
+                    initialData={selectedIngredient}
+                />
+            )}
+
+            {selectedIngredient && (
+                <BuyIngredientModal
+                    open={isBuyModalOpen}
+                    onClose={() => setBuyModalOpen(false)}
+                    onBuy={handleBuyIngredient}
+                    ingredientId={selectedIngredient.id}
+                />
+            )}
+
+            <ConfirmationModal
+                open={isDeleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Delete Ingredient"
+                description="Are you sure you want to delete this ingredient?"
+            />
+        </>
     );
 };
 

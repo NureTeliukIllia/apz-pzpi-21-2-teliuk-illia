@@ -18,7 +18,7 @@ namespace BLL.IngredientManagement
         public Task<Result<List<IngredientDto>, Error>> GetAllIngredientsAsync();
 
         // Brewer's Ingredient Management
-        public Task<Result<List<BrewerIngredientDto>, Error>> AddIngredientsToInventoryAsync(List<BuyIngredientDto> buyIngredients);
+        public Task<Result<List<BrewerIngredientDto>, Error>> AddIngredientsToInventoryAsync(BuyIngredientDto buyIngredientDto);
         public Task<Result<List<BrewerIngredientDto>, Error>> GetBrewerIngredientsAsync();
 
     }

@@ -48,7 +48,7 @@ namespace BLL.IngredientManagement
             }
         }
 
-        public async Task<Result<List<BrewerIngredientDto>, Error>> AddIngredientsToInventoryAsync(List<BuyIngredientDto> buyIngredients)
+        public async Task<Result<List<BrewerIngredientDto>, Error>> AddIngredientsToInventoryAsync(BuyIngredientDto buyIngredientDto)
         {
             try
             {
@@ -68,19 +68,18 @@ namespace BLL.IngredientManagement
                     .Select(ing => ing.Id)
                     .ToListAsync();
 
-                foreach (var i in buyIngredients)
-                {
-                    if (existingIngredientIds.Contains(i.IngredientId))
+
+                    if (existingIngredientIds.Contains(buyIngredientDto.IngredientId))
                     {
-                        if (user.Ingredients.Any(ing => ing.IngredientId == i.IngredientId))
+                        if (user.Ingredients.Any(ing => ing.IngredientId == buyIngredientDto.IngredientId))
                         {
                             var ingredient = await _context.BrewerIngredients
-                                .FirstOrDefaultAsync(ing => ing.BrewerId == userId && ing.IngredientId == i.IngredientId);
-                            ingredient.Weight += i.Weight;
+                                .FirstOrDefaultAsync(ing => ing.BrewerId == userId && ing.IngredientId == buyIngredientDto.IngredientId);
+                            ingredient.Weight += buyIngredientDto.Weight;
                         }
                         else
                         {
-                            user.Ingredients.Add(new BrewerIngredient { IngredientId = i.IngredientId, Weight = i.Weight });
+                            user.Ingredients.Add(new BrewerIngredient { IngredientId = buyIngredientDto.IngredientId, Weight = buyIngredientDto.Weight });
                         }
                     }
                     else
@@ -88,7 +87,7 @@ namespace BLL.IngredientManagement
                         _logger.LogError($"BLL.AddIngredientsToInventoryAsync ERROR: the ingredient is not found");
                         return IngredientServiceErrors.GetIngredientByIdError;
                     }
-                }
+           
 
                 await _context.SaveChangesAsync();
                 return _mapper.Map<List<BrewerIngredientDto>>(await _context.BrewerIngredients.Where(i => i.BrewerId == user.Id).Include(bI => bI.Ingredient).ToListAsync());

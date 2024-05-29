@@ -1,11 +1,5 @@
 import axios from "axios";
-// import {
-//     AlbumsList,
-//     CreateAlbumDto,
-//     CreatePictureDto,
-//     Pictures,
-//     UpdateAlbumDto,
-// } from "../types/types";
+
 
 const url = process.env.REACT_APP_SERVER_URL
     ? process.env.REACT_APP_SERVER_URL
@@ -54,12 +48,17 @@ interface CreateRecipeIngredientDto {
 
 interface CreateIngredientDto {
     name: string;
-    weight: number;
+    price: number;
 }
 
 interface UpdateIngredientDto {
     id: string;
     name: string;
+    price: number;
+}
+
+interface BuyIngredientDto {
+    ingredientId: string;
     weight: number;
 }
 
@@ -318,7 +317,7 @@ export const deleteIngredient = async (ingredientId: string) => {
 
 export const updateIngredient = async (newIngredient: UpdateIngredientDto) => {
     const bearer = localStorage.getItem("bearer");
-    const { data } = await axios.put(`${url}Ingredient/edit`, newIngredient, {
+    const { data } = await axios.put(`${url}Ingredient/update`, newIngredient, {
         headers: { Authorization: `Bearer ${bearer}` },
     });
 
@@ -329,6 +328,20 @@ export const createIngredient = async (newIngredient: CreateIngredientDto) => {
     const bearer = localStorage.getItem("bearer");
     const { data } = await axios.post(
         `${url}Ingredient/create`,
+        newIngredient,
+        {
+            headers: { Authorization: `Bearer ${bearer}` },
+        },
+    );
+
+    return data;
+};
+
+export const buyIngredient = async (ingredientId: string, weight: number) => {
+    const newIngredient = { ingredientId: ingredientId, weight: weight };
+    const bearer = localStorage.getItem("bearer");
+    const { data } = await axios.post(
+        `${url}Ingredient/my-ingredient/buy`,
         newIngredient,
         {
             headers: { Authorization: `Bearer ${bearer}` },

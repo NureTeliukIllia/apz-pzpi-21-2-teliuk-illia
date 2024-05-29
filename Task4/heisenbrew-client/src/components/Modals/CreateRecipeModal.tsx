@@ -12,7 +12,7 @@ import {
 import { getItemsList } from "../../services/api";
 import { RecipeIngredientDto } from "../MainTables/HomeRecipes";
 
-interface UpdateRecipeModalProps {
+interface CreateRecipeModalProps {
     open: boolean;
     onClose: () => void;
     onSubmit: (data: {
@@ -20,11 +20,6 @@ interface UpdateRecipeModalProps {
         description: string;
         ingredients: RecipeIngredientDto[];
     }) => void;
-    initialData: {
-        title: string;
-        description: string;
-        ingredients: RecipeIngredientDto[];
-    };
 }
 
 interface Ingredient {
@@ -32,17 +27,14 @@ interface Ingredient {
     name: string;
 }
 
-const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
+const CreateRecipeModal: React.FC<CreateRecipeModalProps> = ({
     open,
     onClose,
     onSubmit,
-    initialData,
 }) => {
-    const [title, setTitle] = useState(initialData.title);
-    const [description, setDescription] = useState(initialData.description);
-    const [ingredients, setIngredients] = useState<RecipeIngredientDto[]>(
-        initialData.ingredients,
-    );
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [ingredients, setIngredients] = useState<RecipeIngredientDto[]>([]);
     const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
     const [newIngredientId, setNewIngredientId] = useState<string>("");
     const [newIngredientWeight, setNewIngredientWeight] = useState<number>(0);
@@ -55,17 +47,6 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
 
         fetchIngredients();
     }, []);
-
-    useEffect(() => {
-        if (open) {
-            setTitle(initialData.title);
-            setDescription(initialData.description);
-            setIngredients(initialData.ingredients);
-        } else {
-            setNewIngredientId("");
-            setNewIngredientWeight(0);
-        }
-    }, [open, initialData]);
 
     const handleAddIngredient = () => {
         if (newIngredientId && newIngredientWeight > 0) {
@@ -101,20 +82,10 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
         onSubmit({ title, description, ingredients });
     };
 
-    const adjustWeight = (id: string, adjustment: number) => {
-        setIngredients((prevIngredients) =>
-            prevIngredients.map((ing) =>
-                ing.id === id
-                    ? { ...ing, weight: ing.weight + adjustment }
-                    : ing,
-            ),
-        );
-    };
-
     return (
         <Modal open={open} onClose={onClose} style={{ marginTop: "10rem" }}>
             <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2 }}>
-                <h2 style={{ fontSize: "2.5rem" }}>Update Recipe</h2>
+                <h2 style={{ fontSize: "2.5rem" }}>Create Recipe</h2>
                 <TextField
                     label="Title"
                     value={title}
@@ -167,18 +138,6 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
                             inputProps={{ style: { fontSize: 20 } }}
                             InputLabelProps={{ style: { fontSize: 20 } }}
                         />
-                        <Button
-                            onClick={() => adjustWeight(ingredient.id, 1)}
-                            sx={{ fontSize: "2rem" }}
-                        >
-                            +
-                        </Button>
-                        <Button
-                            onClick={() => adjustWeight(ingredient.id, -1)}
-                            sx={{ fontSize: "2rem", marginLeft: "5px" }}
-                        >
-                            -
-                        </Button>
                         <span>g</span>
                     </div>
                 ))}
@@ -237,4 +196,4 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
     );
 };
 
-export default UpdateRecipeModal;
+export default CreateRecipeModal;

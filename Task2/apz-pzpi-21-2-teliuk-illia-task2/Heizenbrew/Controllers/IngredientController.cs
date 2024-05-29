@@ -104,11 +104,11 @@ namespace heisenbrew_api.Controllers
         /// If the operation is successful, it will return a corresponding message.
         /// </remarks>
         /// <returns>An IActionResult representing the result of the operation.</returns>
-        [Authorize(Roles = nameof(Roles.Brewer))]
+        [Authorize]
         [HttpPost("my-ingredient/buy")]
-        public async Task<IActionResult> BuyIngredient([FromBody] List<BuyIngredientDto> ingredients)
+        public async Task<IActionResult> BuyIngredient([FromBody] BuyIngredientDto ingredient)
         {
-            var result = await _ingredientService.AddIngredientsToInventoryAsync(ingredients);
+            var result = await _ingredientService.AddIngredientsToInventoryAsync(ingredient);
             return this.CreateResponse(result);
         }
     }

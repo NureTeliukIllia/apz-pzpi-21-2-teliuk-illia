@@ -1,4 +1,3 @@
-// HomeBrewingEquipment.tsx
 import React, { useState } from "react";
 import {
     Table,
@@ -17,7 +16,8 @@ import {
     deleteEquipment,
     updateEquipment,
 } from "../../services/api";
-import { ConfirmationModal, UpdateModal } from "../Modals/Modals";
+import UpdateEquipmentModal from "../Modals/UpdateEquipmentModal"
+import { ConfirmationModal } from "../Modals/Modals";
 
 interface HomeBrewingEquipmentShortInfoDto {
     id: string;
@@ -56,11 +56,12 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
         if (selectedEquipmentId) {
             await buyEquipment(selectedEquipmentId);
             setBuyModalOpen(false);
-            onDataChange(); // Trigger data update
+            onDataChange();
         }
     };
 
     const handleUpdate = (equipment: HomeBrewingEquipmentShortInfoDto) => {
+        console.log(equipment)
         setSelectedEquipment(equipment);
         setUpdateModalOpen(true);
     };
@@ -204,7 +205,7 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
             />
 
             {selectedEquipment && (
-                <UpdateModal
+                <UpdateEquipmentModal
                     open={isUpdateModalOpen}
                     onClose={() => setUpdateModalOpen(false)}
                     onSubmit={handleConfirmUpdate}

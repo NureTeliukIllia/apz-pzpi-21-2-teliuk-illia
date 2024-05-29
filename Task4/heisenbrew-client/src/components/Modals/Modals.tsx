@@ -1,4 +1,3 @@
-// Modals.tsx
 import React from "react";
 import {
     Dialog,
@@ -25,7 +24,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     title,
     description,
 }) => (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} style={{ marginTop: "10rem" }}>
         <DialogTitle sx={{ fontSize: "2rem" }}>{title}</DialogTitle>
         <DialogContent>
             <DialogContentText sx={{ fontSize: "1.5rem" }}>
@@ -50,70 +49,3 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         </DialogActions>
     </Dialog>
 );
-
-interface UpdateModalProps {
-    open: boolean;
-    onClose: () => void;
-    onSubmit: (updatedData: { name: string; price: number }) => void;
-    initialData: { name: string; price: number };
-}
-
-export const UpdateModal: React.FC<UpdateModalProps> = ({
-    open,
-    onClose,
-    onSubmit,
-    initialData,
-}) => {
-    const [name, setName] = React.useState(initialData.name);
-    const [price, setPrice] = React.useState(initialData.price);
-
-    const handleSubmit = () => {
-        onSubmit({ name, price });
-    };
-
-    return (
-        <Dialog open={open} onClose={onClose}>
-            <DialogTitle sx={{ fontSize: "2rem" }}>
-                Update Equipment
-            </DialogTitle>
-            <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Name"
-                    fullWidth
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    sx={{ fontSize: "1.5rem" }}
-                    InputProps={{ style: { fontSize: "1.5rem" } }}
-                />
-                <TextField
-                    margin="dense"
-                    label="Price"
-                    type="number"
-                    fullWidth
-                    value={price}
-                    onChange={(e) => setPrice(Number(e.target.value))}
-                    sx={{ fontSize: "1.5rem" }}
-                    InputProps={{ style: { fontSize: "1.5rem" } }}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    onClick={onClose}
-                    color="primary"
-                    sx={{ fontSize: "1.2rem" }}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    onClick={handleSubmit}
-                    color="primary"
-                    sx={{ fontSize: "1.2rem" }}
-                >
-                    Update
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-};
