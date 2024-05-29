@@ -10,7 +10,6 @@ namespace Infrustructure.Dto.Ingredient
     (
         Guid Id,
         string Name,
-        decimal Price,
-        string ImgUrl
+        decimal Price
     );
 }

@@ -9,7 +9,6 @@ namespace Infrustructure.Dto.Ingredient
     public record BrewerIngredientDto
     (
         string Name,
-        string ImgUrl,
         double Weight
     );
 }

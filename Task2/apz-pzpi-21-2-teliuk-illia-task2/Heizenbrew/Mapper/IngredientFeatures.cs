@@ -16,10 +16,11 @@ namespace heisenbrew_api.Mapper
             CreateMap<UpdateIngredientDto, Ingredient>();
 
             CreateMap<BrewerIngredient, BrewerIngredientDto>()
-                .ForCtorParam(nameof(BrewerIngredientDto.Name), otp => otp.MapFrom(src => src.Ingredient.Name))
-                .ForCtorParam(nameof(BrewerIngredientDto.ImgUrl), otp => otp.MapFrom(src => src.Ingredient.ImgUrl));
+                .ForCtorParam(nameof(BrewerIngredientDto.Name), otp => otp.MapFrom(src => src.Ingredient.Name));
 
-            CreateMap<CreateRecipeIngredientDto, RecipeIngredient>();
+            CreateMap<CreateRecipeIngredientDto, RecipeIngredient>()
+                .ForMember(dest => dest.IngredientId, opt => opt.MapFrom(src => src.Id));
+
             CreateMap<UpdateRecipeIngredientDto, RecipeIngredient>()
                 .ForMember(dest => dest.IngredientId, opt => opt.MapFrom(src => src.Id));
 

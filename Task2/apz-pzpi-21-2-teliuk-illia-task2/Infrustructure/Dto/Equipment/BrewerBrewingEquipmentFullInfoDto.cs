@@ -10,7 +10,6 @@ namespace Infrustructure.Dto.Equipment
     (
         Guid Id,
         string Name,
-        string ImgUrl,
         string ConnectionString,
         bool IsBrewing
     );
