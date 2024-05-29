@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link as RouterLink } from "react-router-dom";
-import axios from "axios";
+import { useParams, Link as RouterLink, useNavigate } from "react-router-dom";
 import { Container, Typography, Paper, Button, Box } from "@mui/material";
-import { getEquipmentDetails } from "../../services/api";
+import {
+    getEquipmentDetails,
+    buyEquipment,
+    deleteEquipment,
+    updateEquipment,
+} from "../../services/api";
+import UpdateEquipmentFullInfoModal from "../Modals/UpdateEquipmentFullInfoModal";
+import { ConfirmationModal } from "../Modals/Modals";
 
 interface HomeBrewingEquipmentFullInfoDto {
     id: string;
@@ -13,10 +19,15 @@ interface HomeBrewingEquipmentFullInfoDto {
 
 const EquipmentDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const [selectedEquipmentId, setSelectedEquipmentId] = useState<
+        string | null
+    >(null);
     const [equipment, setEquipment] =
         useState<HomeBrewingEquipmentFullInfoDto | null>(null);
-    const userRole = localStorage.getItem("userRole");
-    const isLogged = localStorage.getItem("bearer") !== null;
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+    const [isBuyModalOpen, setBuyModalOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchEquipment = async () => {
@@ -35,16 +46,48 @@ const EquipmentDetails: React.FC = () => {
         return <Typography>Loading...</Typography>;
     }
 
-    const handleBuy = () => {
-        console.log(`Buy Equipment with id: ${equipment.id}`);
+    const userRole = localStorage.getItem("userRole");
+    const isLogged = localStorage.getItem("bearer") !== null;
+
+    const handleBuy = async (id: string) => {
+        setSelectedEquipmentId(id);
+        setBuyModalOpen(true);
+    };
+
+    const handleConfirmBuy = async () => {
+        if (equipment) {
+            await buyEquipment(equipment.id);
+            setBuyModalOpen(false);
+        }
     };
 
     const handleUpdate = () => {
-        console.log(`Update Equipment with id: ${equipment.id}`);
+        setUpdateModalOpen(true);
+    };
+
+    const handleConfirmUpdate = async (updatedData: {
+        name: string;
+        description: string;
+        price: number;
+    }) => {
+        if (equipment) {
+            await updateEquipment({ ...updatedData, id: equipment.id });
+            setUpdateModalOpen(false);
+            const response = await getEquipmentDetails(equipment.id);
+            setEquipment(response.data);
+        }
     };
 
     const handleDelete = () => {
-        console.log(`Delete Equipment with id: ${equipment.id}`);
+        setDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (equipment) {
+            await deleteEquipment(equipment.id);
+            setDeleteModalOpen(false);
+            navigate("/");
+        }
     };
 
     return (
@@ -77,7 +120,7 @@ const EquipmentDetails: React.FC = () => {
                             variant="contained"
                             color="primary"
                             sx={{ fontSize: "1.5rem", marginRight: 2 }}
-                            onClick={handleBuy}
+                            onClick={() => handleBuy(id!)}
                         >
                             Buy
                         </Button>
@@ -114,6 +157,35 @@ const EquipmentDetails: React.FC = () => {
                         </Button>
                     </Typography>
                 )}
+
+                {equipment && (
+                    <UpdateEquipmentFullInfoModal
+                        open={isUpdateModalOpen}
+                        onClose={() => setUpdateModalOpen(false)}
+                        onSubmit={handleConfirmUpdate}
+                        initialData={{
+                            name: equipment.name,
+                            description: equipment.description,
+                            price: equipment.price,
+                        }}
+                    />
+                )}
+
+                <ConfirmationModal
+                    open={isDeleteModalOpen}
+                    onClose={() => setDeleteModalOpen(false)}
+                    onConfirm={handleConfirmDelete}
+                    title="Delete Equipment"
+                    description="Do you really want to delete this equipment?"
+                />
+
+                <ConfirmationModal
+                    open={isBuyModalOpen}
+                    onClose={() => setBuyModalOpen(false)}
+                    onConfirm={handleConfirmBuy}
+                    title="Buy Equipment"
+                    description="Do you really want to buy this equipment?"
+                />
             </Paper>
         </Container>
     );

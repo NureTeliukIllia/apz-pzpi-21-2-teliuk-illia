@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link as RouterLink } from "react-router-dom";
+import { useParams, Link as RouterLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
     Container,
@@ -11,7 +11,13 @@ import {
     ListItem,
     ListItemText,
 } from "@mui/material";
-import { getRecipeDetails } from "../../services/api";
+import {
+    getRecipeDetails,
+    deleteRecipe,
+    updateRecipe,
+} from "../../services/api";
+import UpdateRecipeModal from "../Modals/UpdateRecipeModal";
+import { ConfirmationModal } from "../Modals/Modals";
 
 interface RecipeHomeIngredientsDto {
     id: string;
@@ -31,6 +37,9 @@ export interface RecipeDto {
 const RecipeDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [recipe, setRecipe] = useState<RecipeDto | null>(null);
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -52,16 +61,40 @@ const RecipeDetails: React.FC = () => {
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
 
-    const handleBuy = () => {
-        console.log(`Buy Recipe with id: ${recipe.id}`);
+    const handleUpdate = () => {
+        setUpdateModalOpen(true);
     };
 
-    const handleUpdate = () => {
-        console.log(`Update Recipe with id: ${recipe.id}`);
+    const handleConfirmUpdate = async (updatedData: {
+        title: string;
+        description: string;
+        ingredients: RecipeHomeIngredientsDto[];
+    }) => {
+        if (recipe) {
+            const updatedRecipe = {
+                ...updatedData,
+                ingredients: updatedData.ingredients.map((item) => ({
+                    id: item.id,
+                    weight: item.weight,
+                })),
+            };
+            await updateRecipe({ ...updatedRecipe, id: recipe.id });
+            setUpdateModalOpen(false);
+            const response = await getRecipeDetails(recipe.id);
+            setRecipe(response.data);
+        }
     };
 
     const handleDelete = () => {
-        console.log(`Delete Recipe with id: ${recipe.id}`);
+        setDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (recipe) {
+            await deleteRecipe(recipe.id);
+            setDeleteModalOpen(false);
+            navigate("/");
+        }
     };
 
     return (
@@ -77,7 +110,7 @@ const RecipeDetails: React.FC = () => {
                     {recipe.description}
                 </Typography>
                 <Typography variant="h4" gutterBottom>
-                    Ingredientss
+                    Ingredients
                 </Typography>
                 <Box display="flex" justifyContent="center">
                     <List
@@ -105,50 +138,44 @@ const RecipeDetails: React.FC = () => {
                 >
                     Cooking Price: ${recipe.cookingPrice}
                 </Typography>
-                {isLogged ? (
+                {isLogged && userRole === "Administrator" && (
                     <Box>
                         <Button
                             variant="contained"
-                            color="primary"
+                            color="secondary"
                             sx={{ fontSize: "1.5rem", marginRight: 2 }}
-                            onClick={handleBuy}
+                            onClick={handleUpdate}
                         >
-                            Buy
+                            Update
                         </Button>
-                        {userRole === "Administrator" && (
-                            <>
-                                <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    sx={{ fontSize: "1.5rem", marginRight: 2 }}
-                                    onClick={handleUpdate}
-                                >
-                                    Update
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    color="error"
-                                    sx={{ fontSize: "1.5rem" }}
-                                    onClick={handleDelete}
-                                >
-                                    Delete
-                                </Button>
-                            </>
-                        )}
-                    </Box>
-                ) : (
-                    <Typography variant="h5">
                         <Button
-                            component={RouterLink}
-                            to="/login"
-                            color="primary"
+                            variant="contained"
+                            color="error"
                             sx={{ fontSize: "1.5rem" }}
+                            onClick={handleDelete}
                         >
-                            Login first!
+                            Delete
                         </Button>
-                    </Typography>
+                    </Box>
                 )}
             </Paper>
+
+            <ConfirmationModal
+                open={isDeleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Delete Recipe"
+                description="Do you really want to delete this recipe?"
+            />
+
+            {recipe && (
+                <UpdateRecipeModal
+                    open={isUpdateModalOpen}
+                    onClose={() => setUpdateModalOpen(false)}
+                    onSubmit={handleConfirmUpdate}
+                    initialData={recipe}
+                />
+            )}
         </Container>
     );
 };
