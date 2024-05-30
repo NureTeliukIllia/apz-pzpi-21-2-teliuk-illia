@@ -14,11 +14,14 @@ import { toast } from "react-toastify";
 import { IAuthProps } from "../../types/interfaces";
 import { Button } from "../../components/Button/Button";
 import styles from "./Auth.module.scss";
+import { useTranslation } from "react-i18next";
 
 const Login: FC<IAuthProps> = (props: IAuthProps) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const { t } = useTranslation();
+
 
     const handleLogin = () => {
         const response = signIn({ email: email, password: password });
@@ -63,7 +66,7 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
                     >
                         <LockOutlined sx={{ fontSize: "5rem" }} />
                     </Avatar>
-                    <Typography variant="h2">Login</Typography>
+                    <Typography variant="h2">{t("login")}</Typography>
                     <Box sx={{ mt: 1 }} className={styles["Auth-box"]}>
                         <TextField
                             InputProps={{
@@ -75,7 +78,7 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
                             required
                             fullWidth
                             id="email"
-                            label="Email Address"
+                            label={t("emailAddress")}
                             name="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -93,7 +96,7 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
                             margin="normal"
                             id="password"
                             name="password"
-                            label="Password"
+                            label={t("password")}
                             type="password"
                             value={password}
                             onChange={(e) => {
@@ -104,14 +107,14 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
                         <Button
                             customStyles={styles["Button"]}
                             handleClick={handleLogin}
-                            title="Login"
+                            title={t("login")}
                         >
-                            Login
+                            {t("login")}
                         </Button>
                         <Grid container justifyContent={"flex-end"}>
                             <Grid item>
                                 <Link to="/register" className={styles["Link"]}>
-                                    Don't have an account? Register
+                                    {t("dontHaveAccount")}
                                 </Link>
                             </Grid>
                         </Grid>

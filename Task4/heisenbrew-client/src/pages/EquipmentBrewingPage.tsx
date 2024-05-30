@@ -25,6 +25,7 @@ import {
 } from "../services/api";
 import { RecipeDto } from "./RecipeDetails";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 interface BrewingShortInfoDto {
     equipmentTitle: string;
@@ -85,6 +86,7 @@ const MyEquipmentPage: React.FC = () => {
     const [selectedRecipe, setSelectedRecipe] = useState<RecipeDto | null>(
         null,
     );
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchInitialData = async () => {
@@ -291,7 +293,7 @@ const MyEquipmentPage: React.FC = () => {
     }
 
     return (
-        <Container>
+        <Container style={{ marginTop: "2rem" }}>
             <Paper sx={{ padding: 4, marginTop: 4 }}>
                 <Typography variant="h2" gutterBottom>
                     ({equipment.id.split("-")[0]}) {equipment.name}{" "}
@@ -307,7 +309,7 @@ const MyEquipmentPage: React.FC = () => {
                 >
                     <Box sx={{ flex: 1, marginRight: 2 }}>
                         <Typography variant="h3" gutterBottom>
-                            Connection String
+                            {t("connectionString")}
                         </Typography>
                         <TextField
                             value={connectionString}
@@ -324,7 +326,7 @@ const MyEquipmentPage: React.FC = () => {
                             onClick={handleConnectionStringChange}
                             sx={{ fontSize: "1.5rem" }}
                         >
-                            Update Connection String
+                            {t("updateConnectionString")}
                         </Button>
                     </Box>
                     <Box sx={{ flex: 1 }}>
@@ -339,7 +341,7 @@ const MyEquipmentPage: React.FC = () => {
                             }}
                         >
                             <Typography variant="h5" gutterBottom>
-                                Current Brewing Status
+                                {t("currentBrewingStatus")}
                             </Typography>
                             <Box sx={{ fontSize: "1.5rem", textAlign: "left" }}>
                                 {brewingLogs}
@@ -355,7 +357,7 @@ const MyEquipmentPage: React.FC = () => {
                             }}
                         >
                             <Typography variant="h5" gutterBottom>
-                                Equipment Status
+                                {t("equipmentStatus")}
                             </Typography>
                             <Box sx={{ fontSize: "1.5rem", textAlign: "left" }}>
                                 {equipmentLogs}
@@ -372,7 +374,7 @@ const MyEquipmentPage: React.FC = () => {
                 >
                     <Box sx={{ flex: 1 }}>
                         <Typography variant="h3" gutterBottom>
-                            Choose a recipe to brew
+                            {t("chooseRecipe")}
                         </Typography>
                         <List>
                             {recipes.map((recipe) => (
@@ -420,7 +422,7 @@ const MyEquipmentPage: React.FC = () => {
                                     disabled={isBrewing}
                                     sx={{ marginTop: 2, fontSize: "1.5rem" }}
                                 >
-                                    Start Brewing
+                                    {t("startBrewing")}
                                 </Button>
                                 <Button
                                     variant="contained"
@@ -433,14 +435,14 @@ const MyEquipmentPage: React.FC = () => {
                                         marginLeft: 2,
                                     }}
                                 >
-                                    Abort
+                                    {t("abort")}
                                 </Button>
                             </Box>
                         )}
                     </Box>
                     <Box sx={{ flex: 1, marginLeft: 2, overflowY: "hidden" }}>
                         <Typography variant="h3" gutterBottom>
-                            Brewing History
+                        {t("brewingHistory")}
                         </Typography>
                         <Box
                             sx={{

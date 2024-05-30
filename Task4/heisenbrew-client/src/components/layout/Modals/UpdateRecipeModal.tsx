@@ -9,6 +9,7 @@ import {
     InputLabel,
     FormControl,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { getItemsList } from "../../../services/api";
 import { RecipeIngredientDto } from "../MainTables/HomeRecipes";
 
@@ -38,6 +39,7 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
     onSubmit,
     initialData,
 }) => {
+    const { t } = useTranslation();
     const [title, setTitle] = useState(initialData.title);
     const [description, setDescription] = useState(initialData.description);
     const [ingredients, setIngredients] = useState<RecipeIngredientDto[]>(
@@ -114,9 +116,9 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
     return (
         <Modal open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
             <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2 }}>
-                <h2 style={{ fontSize: "2.5rem" }}>Update Recipe</h2>
+                <h2 style={{ fontSize: "2.5rem" }}>{t("updateRecipe")}</h2>
                 <TextField
-                    label="Title"
+                    label={t("title")}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     fullWidth
@@ -125,7 +127,7 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
                     InputLabelProps={{ style: { fontSize: 20 } }}
                 />
                 <TextField
-                    label="Description"
+                    label={t("description")}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     fullWidth
@@ -134,7 +136,7 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
                     InputLabelProps={{ style: { fontSize: 20 } }}
                 />
                 <h3 style={{ color: "blue", fontSize: "2.5rem" }}>
-                    Ingredients
+                    {t("ingredients")}
                 </h3>
                 {ingredients.map((ingredient, index) => (
                     <div
@@ -185,7 +187,7 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
 
                 <FormControl fullWidth sx={{ mb: 2, fontSize: "2rem" }}>
                     <InputLabel id="ingredient-label" sx={{ fontSize: 20 }}>
-                        Ingredient
+                        {t("ingredient")}
                     </InputLabel>
                     <Select
                         labelId="ingredient-label"
@@ -206,7 +208,7 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
                 </FormControl>
 
                 <TextField
-                    label="Weight (g)"
+                    label={t("weight")}
                     type="number"
                     value={newIngredientWeight}
                     onChange={(e) =>
@@ -222,7 +224,7 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
                     variant="contained"
                     sx={{ mb: 2, fontSize: "2rem" }}
                 >
-                    Add Ingredient
+                    {t("addIngredient")}
                 </Button>
                 <Button
                     onClick={handleSave}
@@ -230,7 +232,7 @@ const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
                     color="primary"
                     sx={{ ml: 2, mb: 2, fontSize: "2rem" }}
                 >
-                    Save
+                    {t("save")}
                 </Button>
             </Box>
         </Modal>

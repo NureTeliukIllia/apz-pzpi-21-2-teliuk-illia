@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
     Table,
     TableBody,
@@ -35,6 +36,7 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
     data,
     onDataChange,
 }) => {
+    const { t } = useTranslation();
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
 
@@ -101,13 +103,13 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Name
+                                {t("name")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Price
+                                {t("price")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Actions
+                                {t("actions")}
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -124,7 +126,7 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                                     </Link>
                                 </TableCell>
                                 <TableCell sx={{ fontSize: "1.5rem" }}>
-                                    {item.price}
+                                    ${item.price}
                                 </TableCell>
                                 <TableCell sx={{ fontSize: "1.5rem" }}>
                                     {isLogged ? (
@@ -137,7 +139,7 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                                                     handleBuy(item.id)
                                                 }
                                             >
-                                                Buy
+                                                {t("buy")}
                                             </Button>
                                             {userRole === "Administrator" && (
                                                 <>
@@ -152,7 +154,7 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                                                             handleUpdate(item)
                                                         }
                                                     >
-                                                        Update
+                                                        {t("update")}
                                                     </Button>
                                                     <Button
                                                         variant="contained"
@@ -167,7 +169,7 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                                                             )
                                                         }
                                                     >
-                                                        Delete
+                                                        {t("delete")}
                                                     </Button>
                                                 </>
                                             )}
@@ -178,7 +180,7 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                                             to="/login"
                                             sx={{ fontSize: "1.2rem" }}
                                         >
-                                            Login first!
+                                            {t("loginFirst")}
                                         </Link>
                                     )}
                                 </TableCell>
@@ -192,16 +194,16 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                 open={isBuyModalOpen}
                 onClose={() => setBuyModalOpen(false)}
                 onConfirm={handleConfirmBuy}
-                title="Buy Equipment"
-                description="Do you really want to buy this equipment?"
+                title={t("buyEquipment")}
+                description={t("confirmBuy")}
             />
 
             <ConfirmationModal
                 open={isDeleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title="Delete Equipment"
-                description="Do you really want to delete this equipment?"
+                title={t("deleteEquipment")}
+                description={t("confirmDelete")}
             />
 
             {selectedEquipment && (

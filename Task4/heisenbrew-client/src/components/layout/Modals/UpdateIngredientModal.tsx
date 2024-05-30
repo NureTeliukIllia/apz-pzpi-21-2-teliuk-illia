@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Box, TextField, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface UpdateIngredientModalProps {
     open: boolean;
@@ -17,6 +18,7 @@ const UpdateIngredientModal: React.FC<UpdateIngredientModalProps> = ({
     onUpdate,
     initialData,
 }) => {
+    const { t } = useTranslation();
     const [name, setName] = useState("");
     const [price, setPrice] = useState(0);
 
@@ -34,16 +36,16 @@ const UpdateIngredientModal: React.FC<UpdateIngredientModalProps> = ({
     return (
         <Modal open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
             <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2 }}>
-                <h2>Update Ingredient</h2>
+                <h2>{t("updateIngredient")}</h2>
                 <TextField
-                    label="Name"
+                    label={t("name")}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     fullWidth
                     sx={{ mb: 2 }}
                 />
                 <TextField
-                    label="Price"
+                    label={t("price")}
                     type="number"
                     value={price}
                     onChange={(e) => setPrice(parseFloat(e.target.value))}
@@ -55,7 +57,7 @@ const UpdateIngredientModal: React.FC<UpdateIngredientModalProps> = ({
                     variant="contained"
                     color="primary"
                 >
-                    Update
+                    {t("update")}
                 </Button>
             </Box>
         </Modal>

@@ -1,6 +1,6 @@
-// BuyIngredientModal.tsx
 import React, { useState } from "react";
 import { Modal, Box, TextField, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface BuyIngredientModalProps {
     open: boolean;
@@ -15,6 +15,7 @@ const BuyIngredientModal: React.FC<BuyIngredientModalProps> = ({
     onBuy,
     ingredientId,
 }) => {
+    const { t } = useTranslation();
     const [weight, setWeight] = useState(0);
 
     const handleBuy = () => {
@@ -24,9 +25,9 @@ const BuyIngredientModal: React.FC<BuyIngredientModalProps> = ({
     return (
         <Modal open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
             <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2 }}>
-                <h2>Buy Ingredient</h2>
+                <h2>{t("buyIngredient")}</h2>
                 <TextField
-                    label="Weight"
+                    label={t("weight")}
                     type="number"
                     value={weight}
                     onChange={(e) => setWeight(parseFloat(e.target.value))}
@@ -41,7 +42,7 @@ const BuyIngredientModal: React.FC<BuyIngredientModalProps> = ({
                     color="primary"
                     sx={{ fontSize: "1.2rem" }}
                 >
-                    Buy
+                    {t("buy")}
                 </Button>
             </Box>
         </Modal>

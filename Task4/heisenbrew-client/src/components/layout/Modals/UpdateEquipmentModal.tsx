@@ -7,6 +7,7 @@ import {
     Button,
 } from "@mui/material";
 import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface UpdateEquipmentModalProps {
     open: boolean;
@@ -21,6 +22,7 @@ const UpdateEquipmentModal: React.FC<UpdateEquipmentModalProps> = ({
     onSubmit,
     initialData,
 }) => {
+    const { t } = useTranslation();
     const [name, setName] = React.useState(initialData.name);
     const [price, setPrice] = React.useState(initialData.price);
 
@@ -50,13 +52,13 @@ const UpdateEquipmentModal: React.FC<UpdateEquipmentModalProps> = ({
             style={{ marginTop: "10rem" }}
         >
             <DialogTitle sx={{ fontSize: "2rem" }}>
-                Update Equipment
+                {t("updateEquipment")}
             </DialogTitle>
             <DialogContent>
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Name"
+                    label={t("name")}
                     fullWidth
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -65,7 +67,7 @@ const UpdateEquipmentModal: React.FC<UpdateEquipmentModalProps> = ({
                 />
                 <TextField
                     margin="dense"
-                    label="Price"
+                    label={t("price")}
                     type="number"
                     fullWidth
                     value={price}
@@ -76,18 +78,18 @@ const UpdateEquipmentModal: React.FC<UpdateEquipmentModalProps> = ({
             </DialogContent>
             <DialogActions>
                 <Button
-                    onClick={onClose}
+                    onClick={handleClose}
                     color="primary"
                     sx={{ fontSize: "1.2rem" }}
                 >
-                    Cancel
+                    {t("cancel")}
                 </Button>
                 <Button
                     onClick={handleSubmit}
                     color="primary"
                     sx={{ fontSize: "1.2rem" }}
                 >
-                    Update
+                    {t("update")}
                 </Button>
             </DialogActions>
         </Dialog>

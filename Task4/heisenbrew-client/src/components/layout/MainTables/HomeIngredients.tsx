@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
     Table,
     TableBody,
@@ -35,6 +36,7 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
     data,
     onDataChange,
 }) => {
+    const { t } = useTranslation();
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
 
@@ -101,13 +103,13 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ fontSize: "2rem" }}>
-                                Name
+                                {t("name")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "2rem" }}>
-                                Price
+                                {t("price")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "2rem" }}>
-                                Actions
+                                {t("actions")}
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -118,7 +120,7 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                                     {item.name}
                                 </TableCell>
                                 <TableCell sx={{ fontSize: "2rem" }}>
-                                    {item.price}
+                                    ${item.price}
                                 </TableCell>
                                 <TableCell>
                                     {isLogged ? (
@@ -131,7 +133,7 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                                                     handleBuy(item.id)
                                                 }
                                             >
-                                                Buy
+                                                {t("buy")}
                                             </Button>
                                             {userRole === "Administrator" && (
                                                 <>
@@ -148,7 +150,7 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                                                             )
                                                         }
                                                     >
-                                                        Update
+                                                        {t("update")}
                                                     </Button>
                                                     <Button
                                                         variant="contained"
@@ -163,7 +165,7 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                                                             )
                                                         }
                                                     >
-                                                        Delete
+                                                        {t("delete")}
                                                     </Button>
                                                 </>
                                             )}
@@ -174,7 +176,7 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                                             to="/login"
                                             sx={{ fontSize: "2rem" }}
                                         >
-                                            Login first!
+                                            {t("loginFirst")}
                                         </Link>
                                     )}
                                 </TableCell>
@@ -206,8 +208,8 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                 open={isDeleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title="Delete Ingredient"
-                description="Are you sure you want to delete this ingredient?"
+                title={t("deleteIngredient")}
+                description={t("confirmDeleteIngredient")}
             />
         </>
     );

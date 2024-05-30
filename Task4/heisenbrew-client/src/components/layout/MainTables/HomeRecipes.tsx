@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
     Table,
     TableBody,
@@ -40,6 +41,7 @@ interface HomeRecipesProps {
 }
 
 const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
+    const { t } = useTranslation();
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
 
@@ -96,19 +98,19 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Title
+                                {t("title")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Description
+                                {t("description")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Brewer
+                                {t("brewer")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Cooking Price
+                                {t("cookingPrice")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Actions
+                                {t("actions")}
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -149,7 +151,7 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
                                                             handleUpdate(item)
                                                         }
                                                     >
-                                                        Update
+                                                        {t("update")}
                                                     </Button>
                                                     <Button
                                                         variant="contained"
@@ -164,7 +166,7 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
                                                             )
                                                         }
                                                     >
-                                                        Delete
+                                                        {t("delete")}
                                                     </Button>
                                                 </>
                                             )}
@@ -175,7 +177,7 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
                                             to="/login"
                                             sx={{ fontSize: "1.2rem" }}
                                         >
-                                            Login first!
+                                            {t("loginFirst")}
                                         </Link>
                                     )}
                                 </TableCell>
@@ -189,8 +191,8 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
                 open={isDeleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title="Delete Recipe"
-                description="Do you really want to delete this recipe?"
+                title={t("deleteRecipe")}
+                description={t("confirmDeleteRecipe")}
             />
 
             {selectedRecipe && (

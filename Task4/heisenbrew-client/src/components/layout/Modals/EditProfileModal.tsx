@@ -7,6 +7,7 @@ import {
     TextField,
     Button,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface EditProfileModalProps {
     open: boolean;
@@ -23,6 +24,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     initialFirstName,
     initialLastName,
 }) => {
+    const { t } = useTranslation();
+
     const [firstName, setFirstName] = useState(initialFirstName);
     const [lastName, setLastName] = useState(initialLastName);
 
@@ -33,10 +36,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
     return (
         <Dialog open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
-            <DialogTitle style={{ fontSize: "3rem" }}>Edit Profile</DialogTitle>
+            <DialogTitle style={{ fontSize: "3rem" }}>
+                {t("editProfile")}
+            </DialogTitle>
             <DialogContent>
                 <TextField
-                    label="First Name"
+                    label={t("firstName")}
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     fullWidth
@@ -46,7 +51,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                     InputLabelProps={{ style: { fontSize: 40 } }}
                 />
                 <TextField
-                    label="Last Name"
+                    label={t("lastName")}
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     fullWidth
@@ -61,14 +66,14 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                     onClick={onClose}
                     color="secondary"
                 >
-                    Cancel
+                    {t("cancel")}
                 </Button>
                 <Button
                     style={{ fontSize: "3rem" }}
                     onClick={handleSave}
                     color="primary"
                 >
-                    Save
+                    {t("save")}
                 </Button>
             </DialogActions>
         </Dialog>

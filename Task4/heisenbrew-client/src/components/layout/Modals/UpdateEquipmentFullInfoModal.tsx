@@ -7,6 +7,7 @@ import {
     Button,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface UpdateEquipmentFullInfoModalProps {
     open: boolean;
@@ -22,6 +23,7 @@ interface UpdateEquipmentFullInfoModalProps {
 const UpdateEquipmentFullInfoModal: React.FC<
     UpdateEquipmentFullInfoModalProps
 > = ({ open, onClose, onSubmit, initialData }) => {
+    const { t } = useTranslation();
     const [name, setName] = useState(initialData.name);
     const [description, setDescription] = useState(initialData.description);
     const [price, setPrice] = useState(initialData.price);
@@ -45,26 +47,26 @@ const UpdateEquipmentFullInfoModal: React.FC<
 
     return (
         <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>Update Equipment</DialogTitle>
+            <DialogTitle>{t("updateEquipment")}</DialogTitle>
             <DialogContent>
                 <TextField
                     autoFocus
                     margin="dense"
-                    label="Name"
+                    label={t("name")}
                     fullWidth
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
                 <TextField
                     margin="dense"
-                    label="Description"
+                    label={t("description")}
                     fullWidth
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 />
                 <TextField
                     margin="dense"
-                    label="Price"
+                    label={t("price")}
                     type="number"
                     fullWidth
                     value={price}
@@ -72,8 +74,8 @@ const UpdateEquipmentFullInfoModal: React.FC<
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>Cancel</Button>
-                <Button onClick={handleSubmit}>Update</Button>
+                <Button onClick={handleClose}>{t("cancel")}</Button>
+                <Button onClick={handleSubmit}>{t("update")}</Button>
             </DialogActions>
         </Dialog>
     );

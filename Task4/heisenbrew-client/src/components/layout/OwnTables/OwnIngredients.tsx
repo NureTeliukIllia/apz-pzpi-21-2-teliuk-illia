@@ -11,6 +11,7 @@ import {
     Link,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export interface OwnIngredientsDto {
     id: string;
@@ -23,13 +24,19 @@ interface OwnIngredientsProps {
 }
 
 const OwnIngredients: React.FC<OwnIngredientsProps> = ({ data }) => {
+    const { t } = useTranslation();
+
     return (
         <TableContainer component={Paper} sx={{ marginTop: 2 }}>
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{ fontSize: "2rem" }}>Name</TableCell>
-                        <TableCell sx={{ fontSize: "2rem" }}>Weight</TableCell>
+                        <TableCell sx={{ fontSize: "2rem" }}>
+                            {t("name")}
+                        </TableCell>
+                        <TableCell sx={{ fontSize: "2rem" }}>
+                            {t("weight")}
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

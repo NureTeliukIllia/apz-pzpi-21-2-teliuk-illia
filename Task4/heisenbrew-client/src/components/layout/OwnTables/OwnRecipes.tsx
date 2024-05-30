@@ -22,6 +22,7 @@ import { RecipeDto } from "../../../pages/RecipeDetails";
 import { RecipeIngredientDto } from "../MainTables/HomeRecipes";
 import UpdateRecipeModal from "../Modals/UpdateRecipeModal";
 import { ConfirmationModal } from "../Modals/Modals";
+import { useTranslation } from "react-i18next";
 
 export interface OwnRecipeDto {
     id: string;
@@ -39,6 +40,7 @@ interface OwnRecipesProps {
 const OwnRecipes: React.FC<OwnRecipesProps> = ({ data, onRecipesChange }) => {
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
+    const { t } = useTranslation();
     const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(
         null,
     );
@@ -100,31 +102,29 @@ const OwnRecipes: React.FC<OwnRecipesProps> = ({ data, onRecipesChange }) => {
 
     return (
         <Box sx={{ marginTop: 2 }}>
-            {userRole === "Administrator" && (
-                <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-                    onClick={() => setIsCreateRecipeModalOpen(true)}
-                >
-                    Create Recipe
-                </Button>
-            )}
+            <Button
+                variant="contained"
+                color="primary"
+                sx={{ marginBottom: 2, fontSize: "1.2rem" }}
+                onClick={() => setIsCreateRecipeModalOpen(true)}
+            >
+                {t("createRecipe")}
+            </Button>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Title
+                                {t("title")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Description
+                                {t("description")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Cooking Price
+                                {t("cookingPrice")}
                             </TableCell>
                             <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Actions
+                                {t("actions")}
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -156,7 +156,7 @@ const OwnRecipes: React.FC<OwnRecipesProps> = ({ data, onRecipesChange }) => {
                                         }}
                                         onClick={() => handleUpdate(item)}
                                     >
-                                        Update
+                                        {t("update")}
                                     </Button>
                                     <Button
                                         variant="contained"
@@ -167,7 +167,7 @@ const OwnRecipes: React.FC<OwnRecipesProps> = ({ data, onRecipesChange }) => {
                                         }}
                                         onClick={() => handleDelete(item.id)}
                                     >
-                                        Delete
+                                        {t("delete")}
                                     </Button>
                                 </TableCell>
                             </TableRow>
@@ -175,21 +175,18 @@ const OwnRecipes: React.FC<OwnRecipesProps> = ({ data, onRecipesChange }) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-
             <CreateRecipeModal
                 open={isCreateRecipeModalOpen}
                 onClose={() => setIsCreateRecipeModalOpen(false)}
                 onSubmit={handleCreateRecipe}
-            />
-
+            />{" "}
             <ConfirmationModal
                 open={isDeleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title="Delete Recipe"
-                description="Do you really want to delete this recipe?"
+                title={t("deleteRecipe")}
+                description={t("confirmDeleteRecipe")}
             />
-
             {selectedRecipe && (
                 <UpdateRecipeModal
                     open={isUpdateModalOpen}

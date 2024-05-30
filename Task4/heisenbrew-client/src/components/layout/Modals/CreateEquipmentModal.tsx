@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Box, TextField, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface CreateEquipmentModalProps {
     open: boolean;
@@ -16,6 +17,7 @@ const CreateEquipmentModal: React.FC<CreateEquipmentModalProps> = ({
     onClose,
     onSubmit,
 }) => {
+    const { t } = useTranslation();
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState<number>(0);
@@ -27,9 +29,9 @@ const CreateEquipmentModal: React.FC<CreateEquipmentModalProps> = ({
     return (
         <Modal open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
             <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2 }}>
-                <h2 style={{ fontSize: "2.5rem" }}>Create Equipment</h2>
+                <h2 style={{ fontSize: "2.5rem" }}>{t('createEquipment')}</h2>
                 <TextField
-                    label="Name"
+                    label={t('name')}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     fullWidth
@@ -38,7 +40,7 @@ const CreateEquipmentModal: React.FC<CreateEquipmentModalProps> = ({
                     InputLabelProps={{ style: { fontSize: 20 } }}
                 />
                 <TextField
-                    label="Description"
+                    label={t('description')}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     fullWidth
@@ -47,7 +49,7 @@ const CreateEquipmentModal: React.FC<CreateEquipmentModalProps> = ({
                     InputLabelProps={{ style: { fontSize: 20 } }}
                 />
                 <TextField
-                    label="Price"
+                    label={t('price')}
                     type="number"
                     value={price}
                     onChange={(e) => setPrice(Number(e.target.value))}
@@ -62,7 +64,7 @@ const CreateEquipmentModal: React.FC<CreateEquipmentModalProps> = ({
                     color="primary"
                     sx={{ fontSize: "2rem" }}
                 >
-                    Save
+                    {t('save')}
                 </Button>
             </Box>
         </Modal>

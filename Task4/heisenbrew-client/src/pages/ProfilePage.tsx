@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Typography, Paper, Box, Button } from "@mui/material";
+import { useTranslation } from 'react-i18next';
 
 import EditProfileModal from "../components/layout/Modals/EditProfileModal";
 import {
@@ -28,6 +29,7 @@ interface BrewerProfileDto {
 }
 
 const ProfilePage: React.FC = () => {
+    const { t } = useTranslation();
     const [profile, setProfile] = useState<BrewerProfileDto | null>(null);
     const [equipment, setEquipment] = useState<OwnBrewingEquipmentDto[] | null>(
         null,
@@ -72,7 +74,7 @@ const ProfilePage: React.FC = () => {
     }, []);
 
     if (!profile || !equipment || !ingredients || !recipes) {
-        return <Typography>Loading...</Typography>;
+        return <Typography>{t("loading")}...</Typography>;
     }
 
     const handleEditProfile = () => {
@@ -95,13 +97,13 @@ const ProfilePage: React.FC = () => {
     };
 
     return (
-        <Container style={{ marginTop: "5rem" }}>
+        <Container style={{ marginTop: "15rem" }}>
             <Paper sx={{ padding: 4, marginTop: 4 }}>
                 <Typography variant="h2" gutterBottom>
-                    Profile:{" "}
+                    {t("profile")}:{" "}
                     {profile.fullName !== " "
                         ? profile.fullName
-                        : "Set your name!"}
+                        : t("setName")}
                 </Typography>
                 <Button
                     variant="outlined"
@@ -109,23 +111,23 @@ const ProfilePage: React.FC = () => {
                     style={{ fontSize: "3rem" }}
                     onClick={handleEditProfile}
                 >
-                    Edit Profile
+                    {t("editProfile")}
                 </Button>
                 <Box sx={{ marginTop: 4 }}>
                     <Typography variant="h4" gutterBottom>
-                        Equipment
+                        {t("equipment")}
                     </Typography>
                     <OwnBrewingEquipment data={equipment} />
                 </Box>
                 <Box sx={{ marginTop: 4 }}>
                     <Typography variant="h4" gutterBottom>
-                        Ingredients
+                        {t("ingredients")}
                     </Typography>
                     <OwnIngredients data={ingredients} />
                 </Box>
                 <Box sx={{ marginTop: 4 }}>
                     <Typography variant="h4" gutterBottom>
-                        Recipes
+                        {t("recipes")}
                     </Typography>
                     <OwnRecipes
                         data={recipes}

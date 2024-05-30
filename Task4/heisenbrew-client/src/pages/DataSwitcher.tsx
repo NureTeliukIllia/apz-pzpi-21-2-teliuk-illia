@@ -12,8 +12,10 @@ import {
     createEquipment,
     createIngredient,
 } from "../services/api";
+import { useTranslation } from "react-i18next";
 
 const DataSwitcher: React.FC = () => {
+    const { t } = useTranslation();
     const [data, setData] = useState<any[]>([]);
     const [dataType, setDataType] = useState<string>("Recipe");
     const [isCreateRecipeModalOpen, setIsCreateRecipeModalOpen] =
@@ -95,21 +97,21 @@ const DataSwitcher: React.FC = () => {
                         onClick={() => setIsCreateRecipeModalOpen(true)}
                         disabled={dataType !== "Recipe"}
                     >
-                        Add Recipe
+                        {t("addRecipe")}
                     </Button>
                     <Button
                         style={{ fontSize: "2rem" }}
                         onClick={() => setIsCreateEquipmentModalOpen(true)}
                         disabled={dataType !== "Equipment"}
                     >
-                        Add Equipment
+                        {t("addEquipment")}
                     </Button>
                     <Button
                         style={{ fontSize: "2rem" }}
                         onClick={() => setIsCreateIngredientModalOpen(true)}
                         disabled={dataType !== "Ingredient"}
                     >
-                        Add Ingredient
+                        {t("addIngredient")}
                     </Button>
                     <Button
                         variant="contained"
@@ -117,7 +119,7 @@ const DataSwitcher: React.FC = () => {
                         sx={{ marginLeft: "2rem", fontSize: "2rem" }}
                         onClick={handleDownloadData}
                     >
-                        Download Data
+                        {t("downloadData")}
                     </Button>
                 </ButtonGroup>
             )}
@@ -132,21 +134,21 @@ const DataSwitcher: React.FC = () => {
                     style={{ fontSize: "2rem" }}
                     onClick={() => setDataType("Recipe")}
                 >
-                    Recipes
+                    {t("recipes")}
                 </Button>
                 <Button
                     color={dataType === "Equipment" ? "primary" : "secondary"}
                     style={{ fontSize: "2rem" }}
                     onClick={() => setDataType("Equipment")}
                 >
-                    Equipment
+                    {t("equipment")}
                 </Button>
                 <Button
                     color={dataType === "Ingredient" ? "primary" : "secondary"}
                     style={{ fontSize: "2rem" }}
                     onClick={() => setDataType("Ingredient")}
                 >
-                    Ingredients
+                    {t("ingredients")}
                 </Button>
             </ButtonGroup>
 

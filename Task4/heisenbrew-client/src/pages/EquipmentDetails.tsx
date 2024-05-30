@@ -9,6 +9,7 @@ import {
 } from "../services/api";
 import UpdateEquipmentFullInfoModal from "../components/layout/Modals/UpdateEquipmentFullInfoModal";
 import { ConfirmationModal } from "../components/layout/Modals/Modals";
+import { useTranslation } from "react-i18next";
 
 interface HomeBrewingEquipmentFullInfoDto {
     id: string;
@@ -18,6 +19,7 @@ interface HomeBrewingEquipmentFullInfoDto {
 }
 
 const EquipmentDetails: React.FC = () => {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const [selectedEquipmentId, setSelectedEquipmentId] = useState<
         string | null
@@ -43,7 +45,7 @@ const EquipmentDetails: React.FC = () => {
     }, [id]);
 
     if (!equipment) {
-        return <Typography>Loading...</Typography>;
+        return <Typography>{t("loading")}...</Typography>;
     }
 
     const userRole = localStorage.getItem("userRole");
@@ -112,7 +114,7 @@ const EquipmentDetails: React.FC = () => {
                     }}
                     gutterBottom
                 >
-                    {equipment.price} $
+                    ${equipment.price}
                 </Typography>
                 {isLogged ? (
                     <Box>
@@ -122,7 +124,7 @@ const EquipmentDetails: React.FC = () => {
                             sx={{ fontSize: "1.5rem", marginRight: 2 }}
                             onClick={() => handleBuy(id!)}
                         >
-                            Buy
+                            {t("buy")}
                         </Button>
                         {userRole === "Administrator" && (
                             <>
@@ -132,7 +134,7 @@ const EquipmentDetails: React.FC = () => {
                                     sx={{ fontSize: "1.5rem", marginRight: 2 }}
                                     onClick={handleUpdate}
                                 >
-                                    Update
+                                    {t("update")}
                                 </Button>
                                 <Button
                                     variant="contained"
@@ -140,7 +142,7 @@ const EquipmentDetails: React.FC = () => {
                                     sx={{ fontSize: "1.5rem" }}
                                     onClick={handleDelete}
                                 >
-                                    Delete
+                                    {t("delete")}
                                 </Button>
                             </>
                         )}
@@ -153,7 +155,7 @@ const EquipmentDetails: React.FC = () => {
                             color="primary"
                             sx={{ fontSize: "1.5rem" }}
                         >
-                            Login first!
+                            {t("loginFirst")}
                         </Button>
                     </Typography>
                 )}
@@ -175,16 +177,16 @@ const EquipmentDetails: React.FC = () => {
                     open={isDeleteModalOpen}
                     onClose={() => setDeleteModalOpen(false)}
                     onConfirm={handleConfirmDelete}
-                    title="Delete Equipment"
-                    description="Do you really want to delete this equipment?"
+                    title={t("deleteEquipment")}
+                    description={t("confirmDeleteEquipment")}
                 />
 
                 <ConfirmationModal
                     open={isBuyModalOpen}
                     onClose={() => setBuyModalOpen(false)}
                     onConfirm={handleConfirmBuy}
-                    title="Buy Equipment"
-                    description="Do you really want to buy this equipment?"
+                    title={t("buyEquipment")}
+                    description={t("confirmBuyEquipment")}
                 />
             </Paper>
         </Container>

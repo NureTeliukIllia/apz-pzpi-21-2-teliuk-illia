@@ -11,6 +11,7 @@ import {
     Link,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export interface OwnBrewingEquipmentDto {
     id: string;
@@ -23,6 +24,8 @@ export interface OwnBrewingEquipmentProps {
 }
 
 const OwnBrewingEquipment: React.FC<OwnBrewingEquipmentProps> = ({ data }) => {
+    const { t } = useTranslation();
+
     const handleManageBrewings = (id: string) => {
         console.log(`Manage brewings on Equipment with id: ${id}`);
     };
@@ -33,13 +36,13 @@ const OwnBrewingEquipment: React.FC<OwnBrewingEquipmentProps> = ({ data }) => {
                 <TableHead>
                     <TableRow>
                         <TableCell align="center" sx={{ fontSize: "1.5rem" }}>
-                            Name
+                            {t("name")}
                         </TableCell>
                         <TableCell align="center" sx={{ fontSize: "1.5rem" }}>
-                            Is Brewing
+                            {t("isBrewing")}
                         </TableCell>
                         <TableCell align="center" sx={{ fontSize: "1.5rem" }}>
-                            Actions
+                            {t("actions")}
                         </TableCell>
                     </TableRow>
                 </TableHead>
@@ -77,7 +80,7 @@ const OwnBrewingEquipment: React.FC<OwnBrewingEquipmentProps> = ({ data }) => {
                                             handleManageBrewings(item.id)
                                         }
                                     >
-                                        Manage Brewings
+                                        {t("manageBrewings")}
                                     </Button>
                                 </Link>
                             </TableCell>

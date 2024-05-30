@@ -14,11 +14,13 @@ import { signUp } from "../../services/authApi";
 import { toast } from "react-toastify";
 import { IAuthProps } from "../../types/interfaces";
 import { Button } from "../../components/Button/Button";
+import { useTranslation } from "react-i18next";
 
 const Register: FC<IAuthProps> = (props: IAuthProps) => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     const handleSignUp = async () => {
@@ -36,11 +38,11 @@ const Register: FC<IAuthProps> = (props: IAuthProps) => {
                     if (error.response) {
                         toast.error(error.response.data.message);
                     } else {
-                        toast.error("Couldn't register you, try again.");
+                        toast.error(t("registerError"));
                     }
                 });
         } else {
-            toast.error("Passwords mismatch.");
+            toast.error(t("passwordMismatch"));
         }
     };
 
@@ -67,7 +69,7 @@ const Register: FC<IAuthProps> = (props: IAuthProps) => {
                     >
                         <LockOutlined sx={{ fontSize: "5rem" }} />
                     </Avatar>
-                    <Typography variant="h2">Sign Up</Typography>
+                    <Typography variant="h2">{t("signUp")}</Typography>
                     <Box sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
@@ -81,7 +83,7 @@ const Register: FC<IAuthProps> = (props: IAuthProps) => {
                                     required
                                     fullWidth
                                     id="email"
-                                    label="Email Address"
+                                    label={t("emailAddress")}
                                     name="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -98,7 +100,7 @@ const Register: FC<IAuthProps> = (props: IAuthProps) => {
                                     required
                                     fullWidth
                                     name="password"
-                                    label="Password"
+                                    label={t("password")}
                                     type="password"
                                     id="password"
                                     value={password}
@@ -120,7 +122,7 @@ const Register: FC<IAuthProps> = (props: IAuthProps) => {
                                     fullWidth
                                     type="password"
                                     id="confirmPassword"
-                                    label="ConfirmPassword"
+                                    label={t("confirmPassword")}
                                     value={confirmPassword}
                                     onChange={(e) =>
                                         setConfirmPassword(e.target.value)
@@ -131,14 +133,14 @@ const Register: FC<IAuthProps> = (props: IAuthProps) => {
                         <Button
                             customStyles={styles["Button"]}
                             handleClick={handleSignUp}
-                            title="SignUp"
+                            title={t("signUp")}
                         >
-                            Register
+                            {t("signUp")}
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <Link to="/login" className={styles["Link"]}>
-                                    Already have an account? Login
+                                    {t("alreadyHaveAccount")}
                                 </Link>
                             </Grid>
                         </Grid>

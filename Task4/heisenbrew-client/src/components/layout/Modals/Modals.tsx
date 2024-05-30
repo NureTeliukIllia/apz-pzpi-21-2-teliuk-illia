@@ -8,6 +8,7 @@ import {
     Button,
     TextField,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface ConfirmationModalProps {
     open: boolean;
@@ -23,29 +24,33 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     onConfirm,
     title,
     description,
-}) => (
-    <Dialog open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
-        <DialogTitle sx={{ fontSize: "2rem" }}>{title}</DialogTitle>
-        <DialogContent>
-            <DialogContentText sx={{ fontSize: "1.5rem" }}>
-                {description}
-            </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-            <Button
-                onClick={onClose}
-                color="primary"
-                sx={{ fontSize: "1.2rem" }}
-            >
-                Cancel
-            </Button>
-            <Button
-                onClick={onConfirm}
-                color="primary"
-                sx={{ fontSize: "1.2rem" }}
-            >
-                Confirm
-            </Button>
-        </DialogActions>
-    </Dialog>
-);
+}) => {
+    const { t } = useTranslation();
+
+    return (
+        <Dialog open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
+            <DialogTitle sx={{ fontSize: "2rem" }}>{t(title)}</DialogTitle>
+            <DialogContent>
+                <DialogContentText sx={{ fontSize: "1.5rem" }}>
+                    {t(description)}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button
+                    onClick={onClose}
+                    color="primary"
+                    sx={{ fontSize: "1.2rem" }}
+                >
+                    {t("cancel")}
+                </Button>
+                <Button
+                    onClick={onConfirm}
+                    color="primary"
+                    sx={{ fontSize: "1.2rem" }}
+                >
+                    {t("confirm")}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};

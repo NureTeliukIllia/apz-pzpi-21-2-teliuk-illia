@@ -9,7 +9,7 @@ import { ToastContainer } from "react-toastify";
 import Home from "./pages/Home/Home";
 import EquipmentDetails from "./pages/EquipmentDetails";
 import RecipeDetails from "./pages/RecipeDetails";
-import OwnProfilePage from "./pages/OwnProfilePage";
+import OwnProfilePage from "./pages/ProfilePage";
 import MyEquipmentPage from "./pages/EquipmentBrewingPage";
 
 function App() {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link as RouterLink, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
     Container,
@@ -11,6 +11,7 @@ import {
     ListItem,
     ListItemText,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { getRecipeDetails, deleteRecipe, updateRecipe } from "../services/api";
 import UpdateRecipeModal from "../components/layout/Modals/UpdateRecipeModal";
 import { ConfirmationModal } from "../components/layout/Modals/Modals";
@@ -32,6 +33,7 @@ export interface RecipeDto {
 
 const RecipeDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const { t } = useTranslation();
     const [recipe, setRecipe] = useState<RecipeDto | null>(null);
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
@@ -51,7 +53,7 @@ const RecipeDetails: React.FC = () => {
     }, [id]);
 
     if (!recipe) {
-        return <Typography>Loading...</Typography>;
+        return <Typography>{t("loading")}...</Typography>;
     }
 
     const userRole = localStorage.getItem("userRole");
@@ -100,13 +102,13 @@ const RecipeDetails: React.FC = () => {
                     {recipe.title}
                 </Typography>
                 <Typography variant="h3" gutterBottom>
-                    Created by: {recipe.brewerName}
+                    {t("createdBy")}: {recipe.brewerName}
                 </Typography>
                 <Typography variant="h4" gutterBottom>
                     {recipe.description}
                 </Typography>
                 <Typography variant="h4" gutterBottom>
-                    Ingredients
+                    {t("ingredients")}
                 </Typography>
                 <Box display="flex" justifyContent="center">
                     <List
@@ -132,7 +134,7 @@ const RecipeDetails: React.FC = () => {
                     }}
                     gutterBottom
                 >
-                    Cooking Price: ${recipe.cookingPrice}
+                    {t("cookingPrice")}: ${recipe.cookingPrice}
                 </Typography>
                 {isLogged && userRole === "Administrator" && (
                     <Box>
@@ -142,7 +144,7 @@ const RecipeDetails: React.FC = () => {
                             sx={{ fontSize: "1.5rem", marginRight: 2 }}
                             onClick={handleUpdate}
                         >
-                            Update
+                            {t("update")}
                         </Button>
                         <Button
                             variant="contained"
@@ -150,7 +152,7 @@ const RecipeDetails: React.FC = () => {
                             sx={{ fontSize: "1.5rem" }}
                             onClick={handleDelete}
                         >
-                            Delete
+                            {t("delete")}
                         </Button>
                     </Box>
                 )}
@@ -160,8 +162,8 @@ const RecipeDetails: React.FC = () => {
                 open={isDeleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title="Delete Recipe"
-                description="Do you really want to delete this recipe?"
+                title={t("deleteRecipe")}
+                description={t("deleteRecipeDescription")}
             />
 
             {recipe && (
