@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Container, Typography, Paper, Box, Button } from "@mui/material";
 
-import EditProfileModal from "../Modals/EditProfileModal";
+import EditProfileModal from "../components/layout/Modals/EditProfileModal";
 import {
     getOwnEquipment,
     getOwnIngredients,
     getOwnProfile,
     getOwnRecipes,
     updateProfile,
-} from "../../services/api";
+} from "../services/api";
 import OwnBrewingEquipment, {
     OwnBrewingEquipmentDto,
-} from "../OwnTables/OwnBrewingEquipment";
+} from "../components/layout/OwnTables/OwnBrewingEquipment";
 
-import OwnIngredients, { OwnIngredientsDto } from "../OwnTables/OwnIngredients";
-import OwnRecipes, { OwnRecipeDto } from "../OwnTables/OwnRecipes";
+import OwnIngredients, {
+    OwnIngredientsDto,
+} from "../components/layout/OwnTables/OwnIngredients";
+import OwnRecipes, {
+    OwnRecipeDto,
+} from "../components/layout/OwnTables/OwnRecipes";
 import { RecipeDto } from "./RecipeDetails";
 
 interface BrewerProfileDto {

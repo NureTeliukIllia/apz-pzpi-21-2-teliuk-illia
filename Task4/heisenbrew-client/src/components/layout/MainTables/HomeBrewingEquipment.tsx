@@ -11,80 +11,84 @@ import {
     Link,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import BuyIngredientModal from "../Modals/BuyIngredientModal";
-import UpdateIngredientModal from "../Modals/UpdateIngredientModal";
+import {
+    buyEquipment,
+    deleteEquipment,
+    updateEquipment,
+} from "../../../services/api";
+import UpdateEquipmentModal from "../Modals/UpdateEquipmentModal";
 import { ConfirmationModal } from "../Modals/Modals";
-import { buyIngredient, deleteIngredient, updateIngredient } from "../../services/api";
 
-interface HomeIngredientsDto {
+interface HomeBrewingEquipmentShortInfoDto {
     id: string;
     name: string;
+    description: string;
     price: number;
 }
 
-interface HomeIngredientsProps {
-    data: HomeIngredientsDto[];
+interface HomeBrewingEquipmentProps {
+    data: HomeBrewingEquipmentShortInfoDto[];
     onDataChange: () => void;
 }
 
-const HomeIngredients: React.FC<HomeIngredientsProps> = ({
+const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
     data,
     onDataChange,
 }) => {
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
 
-    const [selectedIngredient, setSelectedIngredient] =
-        useState<HomeIngredientsDto | null>(null);
-    const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+    const [selectedEquipmentId, setSelectedEquipmentId] = useState<
+        string | null
+    >(null);
+    const [selectedEquipment, setSelectedEquipment] =
+        useState<HomeBrewingEquipmentShortInfoDto | null>(null);
     const [isBuyModalOpen, setBuyModalOpen] = useState(false);
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [ingredientToDelete, setIngredientToDelete] = useState<string | null>(
-        null,
-    );
+    const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
 
-    const handleBuy = (ingredientId: string) => {
-        setSelectedIngredient(
-            data.find((ing) => ing.id === ingredientId) || null,
-        );
+    const handleBuy = async (id: string) => {
+        setSelectedEquipmentId(id);
         setBuyModalOpen(true);
     };
 
-    const handleUpdate = (ingredientId: string) => {
-        setSelectedIngredient(
-            data.find((ing) => ing.id === ingredientId) || null,
-        );
+    const handleConfirmBuy = async () => {
+        if (selectedEquipmentId) {
+            await buyEquipment(selectedEquipmentId);
+            setBuyModalOpen(false);
+            onDataChange();
+        }
+    };
+
+    const handleUpdate = (equipment: HomeBrewingEquipmentShortInfoDto) => {
+        console.log(equipment);
+        setSelectedEquipment(equipment);
         setUpdateModalOpen(true);
     };
 
-    const handleDelete = (ingredientId: string) => {
-        setIngredientToDelete(ingredientId);
-        setDeleteModalOpen(true);
-    };
-
-    const handleUpdateIngredient = async (updatedData: {
+    const handleConfirmUpdate = async (updatedData: {
         name: string;
         price: number;
     }) => {
-        if (selectedIngredient) {
-            await updateIngredient({ ...selectedIngredient, ...updatedData });
+        if (selectedEquipment) {
+            await updateEquipment({
+                ...selectedEquipment,
+                ...updatedData,
+                description: selectedEquipment.description,
+            });
             setUpdateModalOpen(false);
             onDataChange();
         }
     };
 
-    const handleBuyIngredient = async (buyData: {
-        ingredientId: string;
-        weight: number;
-    }) => {
-        await buyIngredient(buyData.ingredientId, buyData.weight);
-        setBuyModalOpen(false);
-        onDataChange();
+    const handleDelete = (id: string) => {
+        setSelectedEquipmentId(id);
+        setDeleteModalOpen(true);
     };
 
     const handleConfirmDelete = async () => {
-        if (ingredientToDelete) {
-            await deleteIngredient(ingredientToDelete);
+        if (selectedEquipmentId) {
+            await deleteEquipment(selectedEquipmentId);
             setDeleteModalOpen(false);
             onDataChange();
         }
@@ -96,13 +100,13 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontSize: "2rem" }}>
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
                                 Name
                             </TableCell>
-                            <TableCell sx={{ fontSize: "2rem" }}>
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
                                 Price
                             </TableCell>
-                            <TableCell sx={{ fontSize: "2rem" }}>
+                            <TableCell sx={{ fontSize: "1.5rem" }}>
                                 Actions
                             </TableCell>
                         </TableRow>
@@ -110,19 +114,25 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                     <TableBody>
                         {data.map((item) => (
                             <TableRow key={item.id}>
-                                <TableCell sx={{ fontSize: "2rem" }}>
-                                    {item.name}
+                                <TableCell sx={{ fontSize: "1.5rem" }}>
+                                    <Link
+                                        component={RouterLink}
+                                        to={`/equipment/${item.id}`}
+                                        sx={{ fontSize: "1.5rem" }}
+                                    >
+                                        {item.name}
+                                    </Link>
                                 </TableCell>
-                                <TableCell sx={{ fontSize: "2rem" }}>
+                                <TableCell sx={{ fontSize: "1.5rem" }}>
                                     {item.price}
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{ fontSize: "1.5rem" }}>
                                     {isLogged ? (
                                         <>
                                             <Button
                                                 variant="contained"
                                                 color="primary"
-                                                sx={{ fontSize: "2rem" }}
+                                                sx={{ fontSize: "1.2rem" }}
                                                 onClick={() =>
                                                     handleBuy(item.id)
                                                 }
@@ -135,13 +145,11 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                                                         variant="contained"
                                                         color="secondary"
                                                         sx={{
-                                                            fontSize: "2rem",
+                                                            fontSize: "1.2rem",
                                                             marginLeft: 1,
                                                         }}
                                                         onClick={() =>
-                                                            handleUpdate(
-                                                                item.id,
-                                                            )
+                                                            handleUpdate(item)
                                                         }
                                                     >
                                                         Update
@@ -150,7 +158,7 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                                                         variant="contained"
                                                         color="error"
                                                         sx={{
-                                                            fontSize: "2rem",
+                                                            fontSize: "1.2rem",
                                                             marginLeft: 1,
                                                         }}
                                                         onClick={() =>
@@ -168,7 +176,7 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                                         <Link
                                             component={RouterLink}
                                             to="/login"
-                                            sx={{ fontSize: "2rem" }}
+                                            sx={{ fontSize: "1.2rem" }}
                                         >
                                             Login first!
                                         </Link>
@@ -180,33 +188,35 @@ const HomeIngredients: React.FC<HomeIngredientsProps> = ({
                 </Table>
             </TableContainer>
 
-            {selectedIngredient && (
-                <UpdateIngredientModal
-                    open={isUpdateModalOpen}
-                    onClose={() => setUpdateModalOpen(false)}
-                    onUpdate={handleUpdateIngredient}
-                    initialData={selectedIngredient}
-                />
-            )}
-
-            {selectedIngredient && (
-                <BuyIngredientModal
-                    open={isBuyModalOpen}
-                    onClose={() => setBuyModalOpen(false)}
-                    onBuy={handleBuyIngredient}
-                    ingredientId={selectedIngredient.id}
-                />
-            )}
+            <ConfirmationModal
+                open={isBuyModalOpen}
+                onClose={() => setBuyModalOpen(false)}
+                onConfirm={handleConfirmBuy}
+                title="Buy Equipment"
+                description="Do you really want to buy this equipment?"
+            />
 
             <ConfirmationModal
                 open={isDeleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title="Delete Ingredient"
-                description="Are you sure you want to delete this ingredient?"
+                title="Delete Equipment"
+                description="Do you really want to delete this equipment?"
             />
+
+            {selectedEquipment && (
+                <UpdateEquipmentModal
+                    open={isUpdateModalOpen}
+                    onClose={() => setUpdateModalOpen(false)}
+                    onSubmit={handleConfirmUpdate}
+                    initialData={{
+                        name: selectedEquipment.name,
+                        price: selectedEquipment.price,
+                    }}
+                />
+            )}
         </>
     );
 };
 
-export default HomeIngredients;
+export default HomeBrewingEquipment;

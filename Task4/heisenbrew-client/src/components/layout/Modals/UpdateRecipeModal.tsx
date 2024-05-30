@@ -9,10 +9,10 @@ import {
     InputLabel,
     FormControl,
 } from "@mui/material";
-import { getItemsList } from "../../services/api";
+import { getItemsList } from "../../../services/api";
 import { RecipeIngredientDto } from "../MainTables/HomeRecipes";
 
-interface CreateRecipeModalProps {
+interface UpdateRecipeModalProps {
     open: boolean;
     onClose: () => void;
     onSubmit: (data: {
@@ -20,6 +20,11 @@ interface CreateRecipeModalProps {
         description: string;
         ingredients: RecipeIngredientDto[];
     }) => void;
+    initialData: {
+        title: string;
+        description: string;
+        ingredients: RecipeIngredientDto[];
+    };
 }
 
 interface Ingredient {
@@ -27,14 +32,17 @@ interface Ingredient {
     name: string;
 }
 
-const CreateRecipeModal: React.FC<CreateRecipeModalProps> = ({
+const UpdateRecipeModal: React.FC<UpdateRecipeModalProps> = ({
     open,
     onClose,
     onSubmit,
+    initialData,
 }) => {
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [ingredients, setIngredients] = useState<RecipeIngredientDto[]>([]);
+    const [title, setTitle] = useState(initialData.title);
+    const [description, setDescription] = useState(initialData.description);
+    const [ingredients, setIngredients] = useState<RecipeIngredientDto[]>(
+        initialData.ingredients,
+    );
     const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
     const [newIngredientId, setNewIngredientId] = useState<string>("");
     const [newIngredientWeight, setNewIngredientWeight] = useState<number>(0);
@@ -47,6 +55,17 @@ const CreateRecipeModal: React.FC<CreateRecipeModalProps> = ({
 
         fetchIngredients();
     }, []);
+
+    useEffect(() => {
+        if (open) {
+            setTitle(initialData.title);
+            setDescription(initialData.description);
+            setIngredients(initialData.ingredients);
+        } else {
+            setNewIngredientId("");
+            setNewIngredientWeight(0);
+        }
+    }, [open, initialData]);
 
     const handleAddIngredient = () => {
         if (newIngredientId && newIngredientWeight > 0) {
@@ -82,10 +101,20 @@ const CreateRecipeModal: React.FC<CreateRecipeModalProps> = ({
         onSubmit({ title, description, ingredients });
     };
 
+    const adjustWeight = (id: string, adjustment: number) => {
+        setIngredients((prevIngredients) =>
+            prevIngredients.map((ing) =>
+                ing.id === id
+                    ? { ...ing, weight: ing.weight + adjustment }
+                    : ing,
+            ),
+        );
+    };
+
     return (
         <Modal open={open} onClose={onClose} style={{ marginTop: "5rem" }}>
             <Box sx={{ p: 4, bgcolor: "white", borderRadius: 2 }}>
-                <h2 style={{ fontSize: "2.5rem" }}>Create Recipe</h2>
+                <h2 style={{ fontSize: "2.5rem" }}>Update Recipe</h2>
                 <TextField
                     label="Title"
                     value={title}
@@ -138,6 +167,18 @@ const CreateRecipeModal: React.FC<CreateRecipeModalProps> = ({
                             inputProps={{ style: { fontSize: 20 } }}
                             InputLabelProps={{ style: { fontSize: 20 } }}
                         />
+                        <Button
+                            onClick={() => adjustWeight(ingredient.id, 1)}
+                            sx={{ fontSize: "2rem" }}
+                        >
+                            +
+                        </Button>
+                        <Button
+                            onClick={() => adjustWeight(ingredient.id, -1)}
+                            sx={{ fontSize: "2rem", marginLeft: "5px" }}
+                        >
+                            -
+                        </Button>
                         <span>g</span>
                     </div>
                 ))}
@@ -196,4 +237,4 @@ const CreateRecipeModal: React.FC<CreateRecipeModalProps> = ({
     );
 };
 
-export default CreateRecipeModal;
+export default UpdateRecipeModal;

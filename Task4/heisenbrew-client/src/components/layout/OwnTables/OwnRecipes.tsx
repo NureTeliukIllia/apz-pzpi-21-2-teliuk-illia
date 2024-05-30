@@ -13,8 +13,12 @@ import {
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import CreateRecipeModal from "../Modals/CreateRecipeModal";
-import { deleteRecipe, updateRecipe, createRecipe } from "../../services/api";
-import { RecipeDto } from "../layout/RecipeDetails";
+import {
+    deleteRecipe,
+    updateRecipe,
+    createRecipe,
+} from "../../../services/api";
+import { RecipeDto } from "../../../pages/RecipeDetails";
 import { RecipeIngredientDto } from "../MainTables/HomeRecipes";
 import UpdateRecipeModal from "../Modals/UpdateRecipeModal";
 import { ConfirmationModal } from "../Modals/Modals";

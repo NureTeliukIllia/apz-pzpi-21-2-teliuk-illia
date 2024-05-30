@@ -11,13 +11,9 @@ import {
     ListItem,
     ListItemText,
 } from "@mui/material";
-import {
-    getRecipeDetails,
-    deleteRecipe,
-    updateRecipe,
-} from "../../services/api";
-import UpdateRecipeModal from "../Modals/UpdateRecipeModal";
-import { ConfirmationModal } from "../Modals/Modals";
+import { getRecipeDetails, deleteRecipe, updateRecipe } from "../services/api";
+import UpdateRecipeModal from "../components/layout/Modals/UpdateRecipeModal";
+import { ConfirmationModal } from "../components/layout/Modals/Modals";
 
 interface RecipeHomeIngredientsDto {
     id: string;

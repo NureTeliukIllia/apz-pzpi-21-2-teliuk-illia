@@ -11,71 +11,84 @@ import {
     Link,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import { deleteRecipe, updateRecipe, getItemsList } from "../../services/api";
+import BuyIngredientModal from "../Modals/BuyIngredientModal";
+import UpdateIngredientModal from "../Modals/UpdateIngredientModal";
 import { ConfirmationModal } from "../Modals/Modals";
-import UpdateRecipeModal from "../Modals/UpdateRecipeModal";
+import {
+    buyIngredient,
+    deleteIngredient,
+    updateIngredient,
+} from "../../../services/api";
 
-interface RecipeDto {
-    id: string;
-    title: string;
-    description: string;
-    brewerName: string;
-    cookingPrice: number;
-    ingredients: RecipeIngredientDto[];
-}
-
-export interface RecipeIngredientDto {
+interface HomeIngredientsDto {
     id: string;
     name: string;
-    weight: number;
+    price: number;
 }
 
-interface HomeRecipesProps {
-    data: RecipeDto[];
+interface HomeIngredientsProps {
+    data: HomeIngredientsDto[];
     onDataChange: () => void;
 }
 
-const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
+const HomeIngredients: React.FC<HomeIngredientsProps> = ({
+    data,
+    onDataChange,
+}) => {
     const userRole = localStorage.getItem("userRole");
     const isLogged = localStorage.getItem("bearer") !== null;
 
-    const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
-    const [selectedRecipe, setSelectedRecipe] = useState<RecipeDto | null>(null);
-    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [selectedIngredient, setSelectedIngredient] =
+        useState<HomeIngredientsDto | null>(null);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+    const [isBuyModalOpen, setBuyModalOpen] = useState(false);
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [ingredientToDelete, setIngredientToDelete] = useState<string | null>(
+        null,
+    );
 
-    const handleUpdate = (recipe: RecipeDto) => {
-        setSelectedRecipe(recipe);
+    const handleBuy = (ingredientId: string) => {
+        setSelectedIngredient(
+            data.find((ing) => ing.id === ingredientId) || null,
+        );
+        setBuyModalOpen(true);
+    };
+
+    const handleUpdate = (ingredientId: string) => {
+        setSelectedIngredient(
+            data.find((ing) => ing.id === ingredientId) || null,
+        );
         setUpdateModalOpen(true);
     };
 
-    const handleConfirmUpdate = async (updatedData: {
-        title: string;
-        description: string;
-        ingredients: RecipeIngredientDto[];
+    const handleDelete = (ingredientId: string) => {
+        setIngredientToDelete(ingredientId);
+        setDeleteModalOpen(true);
+    };
+
+    const handleUpdateIngredient = async (updatedData: {
+        name: string;
+        price: number;
     }) => {
-        if (selectedRecipe) {
-            const updatedRecipe = {
-                ...updatedData,
-                ingredients: updatedData.ingredients.map((item) => ({
-                    id: item.id,
-                    weight: item.weight,
-                })),
-            };
-            await updateRecipe({ ...updatedRecipe, id: selectedRecipe.id });
+        if (selectedIngredient) {
+            await updateIngredient({ ...selectedIngredient, ...updatedData });
             setUpdateModalOpen(false);
             onDataChange();
         }
     };
 
-    const handleDelete = (id: string) => {
-        setSelectedRecipeId(id);
-        setDeleteModalOpen(true);
+    const handleBuyIngredient = async (buyData: {
+        ingredientId: string;
+        weight: number;
+    }) => {
+        await buyIngredient(buyData.ingredientId, buyData.weight);
+        setBuyModalOpen(false);
+        onDataChange();
     };
 
     const handleConfirmDelete = async () => {
-        if (selectedRecipeId) {
-            await deleteRecipe(selectedRecipeId);
+        if (ingredientToDelete) {
+            await deleteIngredient(ingredientToDelete);
             setDeleteModalOpen(false);
             onDataChange();
         }
@@ -87,19 +100,13 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Title
+                            <TableCell sx={{ fontSize: "2rem" }}>
+                                Name
                             </TableCell>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Description
+                            <TableCell sx={{ fontSize: "2rem" }}>
+                                Price
                             </TableCell>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Brewer
-                            </TableCell>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
-                                Cooking Price
-                            </TableCell>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                            <TableCell sx={{ fontSize: "2rem" }}>
                                 Actions
                             </TableCell>
                         </TableRow>
@@ -107,38 +114,38 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
                     <TableBody>
                         {data.map((item) => (
                             <TableRow key={item.id}>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
-                                    <Link
-                                        component={RouterLink}
-                                        to={`/recipe/${item.id}`}
-                                        sx={{ fontSize: "1.5rem" }}
-                                    >
-                                        {item.title}
-                                    </Link>
+                                <TableCell sx={{ fontSize: "2rem" }}>
+                                    {item.name}
                                 </TableCell>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
-                                    {item.description}
+                                <TableCell sx={{ fontSize: "2rem" }}>
+                                    {item.price}
                                 </TableCell>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
-                                    {item.brewerName}
-                                </TableCell>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
-                                    ${item.cookingPrice}
-                                </TableCell>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
+                                <TableCell>
                                     {isLogged ? (
                                         <>
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                sx={{ fontSize: "2rem" }}
+                                                onClick={() =>
+                                                    handleBuy(item.id)
+                                                }
+                                            >
+                                                Buy
+                                            </Button>
                                             {userRole === "Administrator" && (
                                                 <>
                                                     <Button
                                                         variant="contained"
                                                         color="secondary"
                                                         sx={{
-                                                            fontSize: "1.2rem",
+                                                            fontSize: "2rem",
                                                             marginLeft: 1,
                                                         }}
                                                         onClick={() =>
-                                                            handleUpdate(item)
+                                                            handleUpdate(
+                                                                item.id,
+                                                            )
                                                         }
                                                     >
                                                         Update
@@ -147,7 +154,7 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
                                                         variant="contained"
                                                         color="error"
                                                         sx={{
-                                                            fontSize: "1.2rem",
+                                                            fontSize: "2rem",
                                                             marginLeft: 1,
                                                         }}
                                                         onClick={() =>
@@ -165,7 +172,7 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
                                         <Link
                                             component={RouterLink}
                                             to="/login"
-                                            sx={{ fontSize: "1.2rem" }}
+                                            sx={{ fontSize: "2rem" }}
                                         >
                                             Login first!
                                         </Link>
@@ -177,28 +184,33 @@ const HomeRecipes: React.FC<HomeRecipesProps> = ({ data, onDataChange }) => {
                 </Table>
             </TableContainer>
 
+            {selectedIngredient && (
+                <UpdateIngredientModal
+                    open={isUpdateModalOpen}
+                    onClose={() => setUpdateModalOpen(false)}
+                    onUpdate={handleUpdateIngredient}
+                    initialData={selectedIngredient}
+                />
+            )}
+
+            {selectedIngredient && (
+                <BuyIngredientModal
+                    open={isBuyModalOpen}
+                    onClose={() => setBuyModalOpen(false)}
+                    onBuy={handleBuyIngredient}
+                    ingredientId={selectedIngredient.id}
+                />
+            )}
+
             <ConfirmationModal
                 open={isDeleteModalOpen}
                 onClose={() => setDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
-                title="Delete Recipe"
-                description="Do you really want to delete this recipe?"
+                title="Delete Ingredient"
+                description="Are you sure you want to delete this ingredient?"
             />
-
-            {selectedRecipe && (
-                <UpdateRecipeModal
-                    open={isUpdateModalOpen}
-                    onClose={() => setUpdateModalOpen(false)}
-                    onSubmit={handleConfirmUpdate}
-                    initialData={{
-                        title: selectedRecipe.title,
-                        description: selectedRecipe.description,
-                        ingredients: selectedRecipe.ingredients,
-                    }}
-                />
-            )}
         </>
     );
 };
 
-export default HomeRecipes;
+export default HomeIngredients;

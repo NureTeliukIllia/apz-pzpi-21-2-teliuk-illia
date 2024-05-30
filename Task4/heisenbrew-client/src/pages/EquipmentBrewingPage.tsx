@@ -22,7 +22,7 @@ import {
     startNewBrewing,
     abortBrewing,
     getBrewingHistory,
-} from "../../services/api";
+} from "../services/api";
 import { RecipeDto } from "./RecipeDetails";
 import { toast } from "react-toastify";
 

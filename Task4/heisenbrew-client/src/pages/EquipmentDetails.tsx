@@ -6,9 +6,9 @@ import {
     buyEquipment,
     deleteEquipment,
     updateEquipment,
-} from "../../services/api";
-import UpdateEquipmentFullInfoModal from "../Modals/UpdateEquipmentFullInfoModal";
-import { ConfirmationModal } from "../Modals/Modals";
+} from "../services/api";
+import UpdateEquipmentFullInfoModal from "../components/layout/Modals/UpdateEquipmentFullInfoModal";
+import { ConfirmationModal } from "../components/layout/Modals/Modals";
 
 interface HomeBrewingEquipmentFullInfoDto {
     id: string;

@@ -10,10 +10,10 @@ import {
 import { LockOutlined } from "@mui/icons-material";
 import { FC, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signUp } from "../../../services/authApi";
+import { signUp } from "../../services/authApi";
 import { toast } from "react-toastify";
-import { IAuthProps } from "../../../types/interfaces";
-import { Button } from "../../Button/Button";
+import { IAuthProps } from "../../types/interfaces";
+import { Button } from "../../components/Button/Button";
 
 const Register: FC<IAuthProps> = (props: IAuthProps) => {
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -137,11 +137,7 @@ const Register: FC<IAuthProps> = (props: IAuthProps) => {
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link
-
-                                    to="/login"
-                                    className={styles["Link"]}
-                                >
+                                <Link to="/login" className={styles["Link"]}>
                                     Already have an account? Login
                                 </Link>
                             </Grid>

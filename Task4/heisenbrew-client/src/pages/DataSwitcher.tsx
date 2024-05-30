@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Button, ButtonGroup, Container } from "@mui/material";
-import HomeRecipes from "../MainTables/HomeRecipes";
-import HomeBrewingEquipment from "../MainTables/HomeBrewingEquipment";
-import HomeIngredients from "../MainTables/HomeIngredients";
-import { downloadData, getItemsList } from "../../services/api";
-import CreateRecipeModal from "../Modals/CreateRecipeModal";
-import CreateEquipmentModal from "../Modals/CreateEquipmentModal";
-import CreateIngredientModal from "../Modals/CreateIngredientModal";
+import HomeRecipes from "../components/layout/MainTables/HomeRecipes";
+import HomeBrewingEquipment from "../components/layout/MainTables/HomeBrewingEquipment";
+import HomeIngredients from "../components/layout/MainTables/HomeIngredients";
+import { downloadData, getItemsList } from "../services/api";
+import CreateRecipeModal from "../components/layout/Modals/CreateRecipeModal";
+import CreateEquipmentModal from "../components/layout/Modals/CreateEquipmentModal";
+import CreateIngredientModal from "../components/layout/Modals/CreateIngredientModal";
 import {
     createRecipe,
     createEquipment,
     createIngredient,
-} from "../../services/api";
+} from "../services/api";
 
 const DataSwitcher: React.FC = () => {
     const [data, setData] = useState<any[]>([]);
