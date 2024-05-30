@@ -293,7 +293,7 @@ const MyEquipmentPage: React.FC = () => {
     }
 
     return (
-        <Container style={{ marginTop: "2rem" }}>
+        <Container style={{ marginTop: "10rem" }}>
             <Paper sx={{ padding: 4, marginTop: 4 }}>
                 <Typography variant="h2" gutterBottom>
                     ({equipment.id.split("-")[0]}) {equipment.name}{" "}
