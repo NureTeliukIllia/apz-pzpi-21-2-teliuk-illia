@@ -102,13 +102,13 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                            <TableCell sx={{ fontSize: "2.5rem" }}>
                                 {t("name")}
                             </TableCell>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                            <TableCell sx={{ fontSize: "2.5rem" }}>
                                 {t("price")}
                             </TableCell>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                            <TableCell sx={{ fontSize: "2.5rem" }}>
                                 {t("actions")}
                             </TableCell>
                         </TableRow>
@@ -116,25 +116,25 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                     <TableBody>
                         {data.map((item) => (
                             <TableRow key={item.id}>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
+                                <TableCell sx={{ fontSize: "2.5rem" }}>
                                     <Link
                                         component={RouterLink}
                                         to={`/equipment/${item.id}`}
-                                        sx={{ fontSize: "1.5rem" }}
+                                        sx={{ fontSize: "2.5rem" }}
                                     >
                                         {item.name}
                                     </Link>
                                 </TableCell>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
+                                <TableCell sx={{ fontSize: "2.5rem" }}>
                                     ${item.price}
                                 </TableCell>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
+                                <TableCell sx={{ fontSize: "2.5rem" }}>
                                     {isLogged ? (
                                         <>
                                             <Button
                                                 variant="contained"
                                                 color="primary"
-                                                sx={{ fontSize: "1.2rem" }}
+                                                sx={{ fontSize: "2rem" }}
                                                 onClick={() =>
                                                     handleBuy(item.id)
                                                 }
@@ -147,7 +147,7 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                                                         variant="contained"
                                                         color="secondary"
                                                         sx={{
-                                                            fontSize: "1.2rem",
+                                                            fontSize: "2rem",
                                                             marginLeft: 1,
                                                         }}
                                                         onClick={() =>
@@ -160,7 +160,7 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                                                         variant="contained"
                                                         color="error"
                                                         sx={{
-                                                            fontSize: "1.2rem",
+                                                            fontSize: "2rem",
                                                             marginLeft: 1,
                                                         }}
                                                         onClick={() =>
@@ -178,7 +178,7 @@ const HomeBrewingEquipment: React.FC<HomeBrewingEquipmentProps> = ({
                                         <Link
                                             component={RouterLink}
                                             to="/login"
-                                            sx={{ fontSize: "1.2rem" }}
+                                            sx={{ fontSize: "2rem" }}
                                         >
                                             {t("loginFirst")}
                                         </Link>

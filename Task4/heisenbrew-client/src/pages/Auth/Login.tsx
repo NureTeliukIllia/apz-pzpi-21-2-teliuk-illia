@@ -32,7 +32,7 @@ const Login: FC<IAuthProps> = (props: IAuthProps) => {
                 localStorage.setItem("userRole", data.userRole);
                 localStorage.setItem("bearer", data.bearer);
                 props.setIsLogged(true);
-                navigate("/");
+                navigate("/me");
             })
             .catch((error: any) => {
                 if (error.response) {

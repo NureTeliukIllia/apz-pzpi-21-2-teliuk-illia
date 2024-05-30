@@ -31,10 +31,10 @@ const OwnIngredients: React.FC<OwnIngredientsProps> = ({ data }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell sx={{ fontSize: "2rem" }}>
+                        <TableCell sx={{ fontSize: "2.5rem" }}>
                             {t("name")}
                         </TableCell>
-                        <TableCell sx={{ fontSize: "2rem" }}>
+                        <TableCell sx={{ fontSize: "2.5rem" }}>
                             {t("weight")}
                         </TableCell>
                     </TableRow>
@@ -42,10 +42,10 @@ const OwnIngredients: React.FC<OwnIngredientsProps> = ({ data }) => {
                 <TableBody>
                     {data.map((item) => (
                         <TableRow key={item.id}>
-                            <TableCell sx={{ fontSize: "2rem" }}>
+                            <TableCell sx={{ fontSize: "2.5rem" }}>
                                 {item.name}
                             </TableCell>
-                            <TableCell sx={{ fontSize: "2rem" }}>
+                            <TableCell sx={{ fontSize: "2.5rem" }}>
                                 {item.weight} g
                             </TableCell>
                         </TableRow>

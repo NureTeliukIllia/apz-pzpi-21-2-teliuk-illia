@@ -35,13 +35,13 @@ const OwnBrewingEquipment: React.FC<OwnBrewingEquipmentProps> = ({ data }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell align="center" sx={{ fontSize: "1.5rem" }}>
+                        <TableCell align="center" sx={{ fontSize: "2.5rem" }}>
                             {t("name")}
                         </TableCell>
-                        <TableCell align="center" sx={{ fontSize: "1.5rem" }}>
+                        <TableCell align="center" sx={{ fontSize: "2.5rem" }}>
                             {t("isBrewing")}
                         </TableCell>
-                        <TableCell align="center" sx={{ fontSize: "1.5rem" }}>
+                        <TableCell align="center" sx={{ fontSize: "2.5rem" }}>
                             {t("actions")}
                         </TableCell>
                     </TableRow>
@@ -51,21 +51,21 @@ const OwnBrewingEquipment: React.FC<OwnBrewingEquipmentProps> = ({ data }) => {
                         <TableRow key={item.id}>
                             <TableCell
                                 align="center"
-                                sx={{ fontSize: "1.5rem" }}
+                                sx={{ fontSize: "2.5rem" }}
                             >
                                 {item.name} ({item.id.split("-")[0]})
                             </TableCell>
                             <TableCell
                                 align="center"
                                 sx={{
-                                    fontSize: "1.5rem",
+                                    fontSize: "2.5rem",
                                 }}
                             >
                                 {item.isBrewing ? "🟢" : "🔴"}
                             </TableCell>
                             <TableCell
                                 align="center"
-                                sx={{ fontSize: "1.5rem" }}
+                                sx={{ fontSize: "2.5rem" }}
                             >
                                 <Link
                                     component={RouterLink}
@@ -75,7 +75,7 @@ const OwnBrewingEquipment: React.FC<OwnBrewingEquipmentProps> = ({ data }) => {
                                     <Button
                                         variant="contained"
                                         color="primary"
-                                        sx={{ fontSize: "1.2rem" }}
+                                        sx={{ fontSize: "2rem" }}
                                         onClick={() =>
                                             handleManageBrewings(item.id)
                                         }

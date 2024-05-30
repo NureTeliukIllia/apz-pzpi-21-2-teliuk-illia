@@ -114,19 +114,19 @@ const ProfilePage: React.FC = () => {
                     {t("editProfile")}
                 </Button>
                 <Box sx={{ marginTop: 4 }}>
-                    <Typography variant="h4" gutterBottom>
+                    <Typography variant="h2" gutterBottom>
                         {t("equipment")}
                     </Typography>
                     <OwnBrewingEquipment data={equipment} />
                 </Box>
                 <Box sx={{ marginTop: 4 }}>
-                    <Typography variant="h4" gutterBottom>
+                    <Typography variant="h2" gutterBottom>
                         {t("ingredients")}
                     </Typography>
                     <OwnIngredients data={ingredients} />
                 </Box>
                 <Box sx={{ marginTop: 4 }}>
-                    <Typography variant="h4" gutterBottom>
+                    <Typography variant="h2" gutterBottom>
                         {t("recipes")}
                     </Typography>
                     <OwnRecipes

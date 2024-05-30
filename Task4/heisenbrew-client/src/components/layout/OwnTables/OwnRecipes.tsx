@@ -105,7 +105,7 @@ const OwnRecipes: React.FC<OwnRecipesProps> = ({ data, onRecipesChange }) => {
             <Button
                 variant="contained"
                 color="primary"
-                sx={{ marginBottom: 2, fontSize: "1.2rem" }}
+                sx={{ marginBottom: 2, fontSize: "2rem" }}
                 onClick={() => setIsCreateRecipeModalOpen(true)}
             >
                 {t("createRecipe")}
@@ -114,16 +114,16 @@ const OwnRecipes: React.FC<OwnRecipesProps> = ({ data, onRecipesChange }) => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                            <TableCell sx={{ fontSize: "2.5rem" }}>
                                 {t("title")}
                             </TableCell>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                            <TableCell sx={{ fontSize: "2.5rem" }}>
                                 {t("description")}
                             </TableCell>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                            <TableCell sx={{ fontSize: "2.5rem" }}>
                                 {t("cookingPrice")}
                             </TableCell>
-                            <TableCell sx={{ fontSize: "1.5rem" }}>
+                            <TableCell sx={{ fontSize: "2.5rem" }}>
                                 {t("actions")}
                             </TableCell>
                         </TableRow>
@@ -131,27 +131,27 @@ const OwnRecipes: React.FC<OwnRecipesProps> = ({ data, onRecipesChange }) => {
                     <TableBody>
                         {data.map((item) => (
                             <TableRow key={item.id}>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
+                                <TableCell sx={{ fontSize: "2.5rem" }}>
                                     <Link
                                         component={RouterLink}
                                         to={`/recipe/${item.id}`}
-                                        sx={{ fontSize: "1.5rem" }}
+                                        sx={{ fontSize: "2.5rem" }}
                                     >
                                         {item.title}
                                     </Link>
                                 </TableCell>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
+                                <TableCell sx={{ fontSize: "2.5rem" }}>
                                     {item.description}
                                 </TableCell>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
+                                <TableCell sx={{ fontSize: "2.5rem" }}>
                                     ${item.cookingPrice}
                                 </TableCell>
-                                <TableCell sx={{ fontSize: "1.5rem" }}>
+                                <TableCell sx={{ fontSize: "2.5rem" }}>
                                     <Button
                                         variant="contained"
                                         color="secondary"
                                         sx={{
-                                            fontSize: "1.2rem",
+                                            fontSize: "2rem",
                                             marginLeft: 1,
                                         }}
                                         onClick={() => handleUpdate(item)}
@@ -162,7 +162,7 @@ const OwnRecipes: React.FC<OwnRecipesProps> = ({ data, onRecipesChange }) => {
                                         variant="contained"
                                         color="error"
                                         sx={{
-                                            fontSize: "1.2rem",
+                                            fontSize: "2rem",
                                             marginLeft: 1,
                                         }}
                                         onClick={() => handleDelete(item.id)}
